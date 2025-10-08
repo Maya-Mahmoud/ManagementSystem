@@ -46,8 +46,13 @@
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                        <input type="text" id="lectureSubject" name="subject" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select id="lectureSubject" name="subject" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a subject</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->name }}">{{ $subject->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="mb-4">
@@ -113,8 +118,13 @@
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                        <input type="text" id="editLectureSubject" name="subject" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select id="editLectureSubject" name="subject" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a subject</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->name }}">{{ $subject->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="mb-4">

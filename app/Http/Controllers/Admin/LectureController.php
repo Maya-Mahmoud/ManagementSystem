@@ -23,7 +23,8 @@ class LectureController extends Controller
         }
 
         $halls = Hall::all();
-        return view('admin.lecture-management', compact('halls'));
+        $subjects = \App\Models\Subject::all();
+        return view('admin.lecture-management', compact('halls', 'subjects'));
     }
 
     /**
