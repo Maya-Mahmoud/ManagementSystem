@@ -2,11 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ProfessorMiddleware;
 use App\Http\Middleware\AdminOrProfessorMiddleware;
-
 use App\Http\Middleware\StudentMiddleware;
 use App\Livewire\Admin\Classrooms;
 use App\Livewire\Admin\Users;
@@ -14,7 +12,7 @@ use App\Http\Controllers\Admin\LectureController;
 use App\Http\Controllers\Professor\HallController;
 use Illuminate\Support\Facades\Auth;
 
-Route::prefix('admin/api')->group(function () {
+Route::middleware([AdminOrProfessorMiddleware::class])->prefix('admin/api')->group(function () {
     Route::get('lectures-by-date', [LectureController::class, 'lecturesByDate']);
 });
 
@@ -67,7 +65,6 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
         return view('admin.reports');
     })->name('reports');
     Route::view('professors', 'admin.professors')->name('professors');
-    Route::get('lectures', [LectureController::class, 'index'])->name('lectures');
     Route::get('dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
@@ -78,34 +75,22 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
 
 // مسارات مشتركة بين المدير والبروفيسور (مثل الـ API الذي تحتاجه القائمة المنسدلة) - محمية بـ AdminOrProfessorMiddleware
 Route::middleware([AdminOrProfessorMiddleware::class])
-    ->prefix('admin') // المسار ما يزال يبدأ بـ /admin/ كما هو مطلوب في الفرونت إند
+    ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::get('lectures', [LectureController::class, 'index'])->name('lectures'); // تم نقل هذا من AdminMiddleware
         Route::get('generate-qr', [\App\Http\Controllers\Admin\QrCodeController::class, 'index'])->name('generate-qr');
         Route::post('api/generate-qr', [\App\Http\Controllers\Admin\QrCodeController::class, 'generateQrCode']);
 
-        // 🚨 التعديل الرئيسي: API لـ halls تم وضعه هنا ليكون متاحاً للمدير والبروفيسور
+        // 🚨 التعديل الرئيسي: API لـ halls وlectures تم وضعه هنا ليكون متاحاً للمدير والبروفيسور
         Route::prefix('api')->name('api.')->group(function () {
             Route::get('lectures', [LectureController::class, 'index'])->name('api.lectures');
-            // مسار القاعات: AdminOrProfessorMiddleware يسمح لكلا الدورين بالوصول
-            Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class); 
+            Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class);
+            Route::apiResource('lectures', LectureController::class); // إضافة هذا لدعم POST وCRUD الكامل
         });
 
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');
-        
     });
-
-// ⛔️⛔️ تم حذف المجموعة المكررة التي كانت تحتوي على API halls ومحمية فقط بـ AdminMiddleware ⛔️⛔️
-// هذا الجزء تم حذفه لأنه كان يسبب التضارب والصلاحية المقيدة:
-/* Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
-    Route::prefix('api')->name('api.')->group(function () {
-        Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class);
-        Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
-        // Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class); // هذا هو السطر الذي تم نقله/حذفه
-    });
-}); 
-*/
-
 
 // مسارات البروفيسور (Professor Routes) - محمية بـ AdminOrProfessorMiddleware
 Route::middleware([AdminOrProfessorMiddleware::class])->prefix('professor')->name('professor.')->group(function () {
