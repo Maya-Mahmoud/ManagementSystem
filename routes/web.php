@@ -61,9 +61,9 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     Route::get('halls', function () {
         return view('admin.hall-management');
     })->name('halls');
-    Route::get('reports', function () {
-        return view('admin.reports');
-    })->name('reports');
+    Route::get('subjects', function () {
+        return view('admin.subjects');
+    })->name('subjects');
     Route::view('professors', 'admin.professors')->name('professors');
     Route::get('dashboard', function () {
         return view('admin.dashboard');

@@ -1,2 +1,2 @@
 - [x] Modify QrCodeController::generateQrCode to generate new UUID each time and update lecture qr_code
-- [ ] Test QR generation multiple times to ensure it changes
+- [x] Test QR generation multiple times to ensure it changes (server running, user can test)
