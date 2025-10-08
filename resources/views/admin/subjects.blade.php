@@ -41,26 +41,101 @@
         <!-- Subjects List -->
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-6 flex justify-between items-center border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Lecture Subjects</h3>
-            <a href="#" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded">+ Add Subject </a>
+                <h3 class="text-lg font-medium text-gray-900">Subjects</h3>
+                <button id="addSubjectBtn" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded">+ Add Subject</button>
             </div>
             <div class="p-6">
-                @php
-                    $subjects = App\Models\Lecture::distinct('subject')->pluck('subject')->filter()->values();
-                @endphp
+                @if(session('success'))
+                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                        {{ session('success') }}
+                    </div>
+                @endif
                 @if($subjects->isEmpty())
                     <p class="text-gray-600">No subjects found.</p>
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($subjects as $subject)
                             <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="text-md font-medium text-gray-900">{{ $subject }}</h4>
-                                <p class="text-sm text-gray-600">{{ App\Models\Lecture::where('subject', $subject)->count() }} lectures</p>
+                                <h4 class="text-md font-medium text-gray-900">{{ $subject->name }}</h4>
+                                <p class="text-sm text-gray-600">Semester: {{ ucfirst($subject->semester) }}, Year: {{ ucfirst($subject->year) }}, Department: {{ ucfirst(str_replace('_', ' ', $subject->department)) }}</p>
                             </div>
                         @endforeach
                     </div>
                 @endif
             </div>
         </div>
+
+        <!-- Add Subject Modal -->
+        <div id="addSubjectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Subject</h3>
+                    <form action="{{ route('admin.subjects.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-gray-700">Subject Name</label>
+                            <input type="text" name="name" id="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="semester" class="block text-sm font-medium text-gray-700">Semester</label>
+                            <select name="semester" id="semester" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                                <option value="">Select Semester</option>
+                                <option value="first">First</option>
+                                <option value="second">Second</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
+                            <select name="year" id="year" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                                <option value="">Select Year</option>
+                                <option value="first">First</option>
+                                <option value="second">Second</option>
+                                <option value="third">Third</option>
+                                <option value="fourth">Fourth</option>
+                                <option value="fifth">Fifth</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
+                            <select name="department" id="department" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                                <option value="">Select Department</option>
+                                <option value="communications">Communications</option>
+                                <option value="energy">Energy</option>
+                                <option value="marine">Marine</option>
+                                <option value="design_and_production">Design and Production</option>
+                                <option value="computers">Computers</option>
+                                <option value="medical">Medical</option>
+                                <option value="mechatronics">Mechatronics</option>
+                                <option value="power">Power</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" id="closeModalBtn" class="mr-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700">Add Subject</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const addSubjectBtn = document.getElementById('addSubjectBtn');
+            const addSubjectModal = document.getElementById('addSubjectModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            addSubjectBtn.addEventListener('click', function() {
+                addSubjectModal.classList.remove('hidden');
+            });
+
+            closeModalBtn.addEventListener('click', function() {
+                addSubjectModal.classList.add('hidden');
+            });
+
+            addSubjectModal.addEventListener('click', function(e) {
+                if (e.target === addSubjectModal) {
+                    addSubjectModal.classList.add('hidden');
+                }
+            });
+        </script>
     </div>
 </x-admin-layout>

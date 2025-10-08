@@ -61,9 +61,8 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     Route::get('halls', function () {
         return view('admin.hall-management');
     })->name('halls');
-    Route::get('subjects', function () {
-        return view('admin.subjects');
-    })->name('subjects');
+    Route::get('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'index'])->name('subjects');
+    Route::post('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'store'])->name('subjects.store');
     Route::view('professors', 'admin.professors')->name('professors');
     Route::get('dashboard', function () {
         return view('admin.dashboard');
