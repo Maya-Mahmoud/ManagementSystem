@@ -8,6 +8,7 @@ use App\Models\Hall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class LectureController extends Controller
@@ -85,6 +86,7 @@ class LectureController extends Controller
                         'end_time' => $end,
                         'max_students' => $validated['max_students'],
                         'user_id' => $validated['user_id'],
+                        'qr_code' => Str::uuid(),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
@@ -102,6 +104,10 @@ class LectureController extends Controller
             unset($validated['professor']);
 
             $lecture = Lecture::create($validated);
+
+            // Generate unique QR code
+            $lecture->qr_code = Str::uuid();
+            $lecture->save();
 
             // Update professor field separately
             if ($professorName) {

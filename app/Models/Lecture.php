@@ -12,10 +12,13 @@ class Lecture extends Model
     protected $fillable = [
         'title',
         'subject',
+        'professor',
         'hall_id',
         'user_id',
         'start_time',
         'end_time',
+        'max_students',
+        'qr_code',
     ];
 
     public function hall()

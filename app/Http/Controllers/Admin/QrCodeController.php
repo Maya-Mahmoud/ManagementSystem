@@ -32,14 +32,18 @@ class QrCodeController extends Controller
 
         $lecture = Lecture::with('hall', 'user')->findOrFail($request->lecture_id);
 
-        // Generate a unique token for attendance session (e.g., UUID)
-        $attendanceToken = (string) Str::uuid();
+        // Use the stored QR code for attendance
+        $qrCode = $lecture->qr_code;
 
-        // Store the token with lecture and expiration in DB or cache (not implemented here)
-        // For demo, we encode a URL with token and lecture id
+        // If no QR code, generate one (for existing lectures without it)
+        if (!$qrCode) {
+            $qrCode = (string) Str::uuid();
+            $lecture->qr_code = $qrCode;
+            $lecture->save();
+        }
 
-        // Since route 'student.attendance.scan' is not defined, use a placeholder URL or define the route accordingly
-        $attendanceUrl = url('/student/attendance/scan?token=' . $attendanceToken . '&lecture=' . $lecture->id);
+        // URL for attendance scan
+        $attendanceUrl = url('/student/attendance/scan?qr=' . $qrCode);
 
         // Generate QR code SVG using BaconQrCode directly
         $renderer = new ImageRenderer(
