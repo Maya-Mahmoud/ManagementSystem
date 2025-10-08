@@ -1,2 +1,2 @@
-- [x] Modify routes/web.php to add lectures-by-date under professor/api group.
-- [x] Modify resources/views/admin/lecture-management.blade.php to use dynamic API base URL based on user role in JavaScript.
+- [x] Modify QrCodeController::generateQrCode to generate new UUID each time and update lecture qr_code
+- [ ] Test QR generation multiple times to ensure it changes

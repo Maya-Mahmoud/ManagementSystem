@@ -32,15 +32,10 @@ class QrCodeController extends Controller
 
         $lecture = Lecture::with('hall', 'user')->findOrFail($request->lecture_id);
 
-        // Use the stored QR code for attendance
-        $qrCode = $lecture->qr_code;
-
-        // If no QR code, generate one (for existing lectures without it)
-        if (!$qrCode) {
-            $qrCode = (string) Str::uuid();
-            $lecture->qr_code = $qrCode;
-            $lecture->save();
-        }
+        // Always generate a new QR code for attendance
+        $qrCode = (string) Str::uuid();
+        $lecture->qr_code = $qrCode;
+        $lecture->save();
 
         // URL for attendance scan
         $attendanceUrl = url('/student/attendance/scan?qr=' . $qrCode);
