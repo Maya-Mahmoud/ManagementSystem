@@ -1,0 +1,2 @@
+- [x] Modify routes/web.php to add lectures-by-date under professor/api group.
+- [x] Modify resources/views/admin/lecture-management.blade.php to use dynamic API base URL based on user role in JavaScript.
