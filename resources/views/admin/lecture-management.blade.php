@@ -45,12 +45,48 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                        <select id="lectureDepartment" name="department" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a department</option>
+                            <option value="communications">Communications</option>
+                            <option value="energy">Energy</option>
+                            <option value="marine">Marine</option>
+                            <option value="design_and_production">Design and Production</option>
+                            <option value="computers">Computers</option>
+                            <option value="medical">Medical</option>
+                            <option value="mechatronics">Mechatronics</option>
+                            <option value="power">Power</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                        <select id="lectureYear" name="year" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a year</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                            <option value="third">Third</option>
+                            <option value="fourth">Fourth</option>
+                            <option value="fifth">Fifth</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                        <select id="lectureSemester" name="semester" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a semester</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
                         <select id="lectureSubject" name="subject" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">Select a subject</option>
                             @foreach($subjects as $subject)
-                                <option value="{{ $subject->name }}">{{ $subject->name }}</option>
+                                <option value="{{ $subject->name }}" data-department="{{ $subject->department }}" data-year="{{ $subject->year }}" data-semester="{{ $subject->semester }}">{{ $subject->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -92,6 +128,41 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const departmentSelect = document.getElementById('lectureDepartment');
+            const yearSelect = document.getElementById('lectureYear');
+            const semesterSelect = document.getElementById('lectureSemester');
+            const subjectSelect = document.getElementById('lectureSubject');
+
+            function filterSubjects() {
+                const selectedDepartment = departmentSelect.value;
+                const selectedYear = yearSelect.value;
+                const selectedSemester = semesterSelect.value;
+
+                for (const option of subjectSelect.options) {
+                    const matchesDepartment = !selectedDepartment || option.dataset.department === selectedDepartment;
+                    const matchesYear = !selectedYear || option.dataset.year === selectedYear;
+                    const matchesSemester = !selectedSemester || option.dataset.semester === selectedSemester;
+
+                    option.style.display = (matchesDepartment && matchesYear && matchesSemester) ? '' : 'none';
+                }
+
+                // Reset subject selection if current selection is hidden
+                if (subjectSelect.selectedOptions.length > 0) {
+                    const selectedOption = subjectSelect.selectedOptions[0];
+                    if (selectedOption.style.display === 'none') {
+                        subjectSelect.value = '';
+                    }
+                }
+            }
+
+            departmentSelect.addEventListener('change', filterSubjects);
+            yearSelect.addEventListener('change', filterSubjects);
+            semesterSelect.addEventListener('change', filterSubjects);
+        });
+    </script>
 
     <!-- Edit Lecture Modal -->
     <div id="editLectureModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">

@@ -5,8 +5,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Subjects Management</h1>
             <p class="text-gray-600">Manage lecture subjects</p>
         </div>
-
-        <!-- Sub Navigation -->
+   <!-- Sub Navigation -->
         <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="px-6 py-4">
                 <nav class="flex space-x-8">
@@ -37,6 +36,57 @@
                 </nav>
             </div>
         </div>
+        <!-- Filters -->
+        <div class="bg-white shadow-sm rounded-lg mb-6">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Filter Subjects</h3>
+                <form method="GET" action="{{ route('admin.subjects') }}" class="flex flex-wrap gap-4 items-end">
+                    <div class="flex-1 min-w-0">
+                        <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                        <select name="year" id="year" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">All Years</option>
+                            <option value="first" {{ request('year') == 'first' ? 'selected' : '' }}>First</option>
+                            <option value="second" {{ request('year') == 'second' ? 'selected' : '' }}>Second</option>
+                            <option value="third" {{ request('year') == 'third' ? 'selected' : '' }}>Third</option>
+                            <option value="fourth" {{ request('year') == 'fourth' ? 'selected' : '' }}>Fourth</option>
+                            <option value="fifth" {{ request('year') == 'fifth' ? 'selected' : '' }}>Fifth</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <label for="semester" class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+                        <select name="semester" id="semester" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">All Semesters</option>
+                            <option value="first" {{ request('semester') == 'first' ? 'selected' : '' }}>First</option>
+                            <option value="second" {{ request('semester') == 'second' ? 'selected' : '' }}>Second</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <label for="department" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <select name="department" id="department" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">All Departments</option>
+                            <option value="communications" {{ request('department') == 'communications' ? 'selected' : '' }}>Communications</option>
+                            <option value="energy" {{ request('department') == 'energy' ? 'selected' : '' }}>Energy</option>
+                            <option value="marine" {{ request('department') == 'marine' ? 'selected' : '' }}>Marine</option>
+                            <option value="design_and_production" {{ request('department') == 'design_and_production' ? 'selected' : '' }}>Design and Production</option>
+                            <option value="computers" {{ request('department') == 'computers' ? 'selected' : '' }}>Computers</option>
+                            <option value="medical" {{ request('department') == 'medical' ? 'selected' : '' }}>Medical</option>
+                            <option value="mechatronics" {{ request('department') == 'mechatronics' ? 'selected' : '' }}>Mechatronics</option>
+                            <option value="power" {{ request('department') == 'power' ? 'selected' : '' }}>Power</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                          search
+                        </button>
+                <a href="{{ route('admin.subjects') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    Clear
+                </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+     
 
         <!-- Subjects List -->
         <div class="bg-white shadow-sm rounded-lg">
