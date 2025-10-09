@@ -30,9 +30,8 @@
             {{-- Role Selection - Cards Style --}}
             <div class="flex flex-col items-center space-y-4 mt-5">
                 <div class="flex justify-center space-x-6">
-                    <!-- Student Card -->
                     <label class="cursor-pointer">
-                        <input type="radio" name="role" value="student" class="hidden peer" required />
+                        <input type="radio" name="role" value="student" class="hidden peer" />
                         <div class="flex flex-col items-center p-4 border-2 rounded-lg peer-checked:border-purple-600 peer-checked:bg-purple-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-purple-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
@@ -42,9 +41,8 @@
                         </div>
                     </label>
     
-                    <!-- Professor Card -->
                     <label class="cursor-pointer">
-                        <input type="radio" name="role" value="professor" class="hidden peer" required />
+                        <input type="radio" name="role" value="professor" class="hidden peer" />
                         <div class="flex flex-col items-center p-4 border-2 rounded-lg peer-checked:border-purple-600 peer-checked:bg-purple-50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-purple-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -53,40 +51,44 @@
                         </div>
                     </label>
                 </div>
-                <div id="verification-code-container" class="hidden w-1/3 mx-auto">
-                    <x-label for="verification_code" value="{{ __('Verification Code') }}" />
-                    <x-input 
-                        id="verification_code" 
-                        class="block mt-1 w-full" 
-                        type="text" 
-                        name="verification_code" 
-                        placeholder="Enter verification code"
-                    />
+
+                {{-- الحقول التي يتم التحكم بظهورها وإخفائها --}}
+                <div id="role-dependent-fields" class="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 space-y-4">
+                    <div id="department-container" class="hidden">
+                        <x-label for="department_id" value="select the section" />
+                        <select id="department_id" name="department_id" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                            <option value="">select section</option>
+                            @if(isset($departments))
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    <div id="year-container" class="hidden">
+                        <x-label for="year" value= " Select Year" />
+                        <select id="year" name="year" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                            <option value="">Select year</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                            <option value="third">Third</option>
+                            <option value="fourth">Fourth</option>
+                            <option value="fifth">Fifth</option>
+                        </select>
+                    </div>
+                    <div id="verification-code-container" class="hidden">
+                        <x-label for="verification_code" value="{{ __('Verification Code') }}" />
+                        <x-input 
+                            id="verification_code" 
+                            class="block mt-1 w-full" 
+                            type="text" 
+                            name="verification_code" 
+                            placeholder="Enter verification code"
+                        />
+                    </div>
                 </div>
             </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const professorRadio = document.querySelector('input[name="role"][value="professor"]');
-                    const studentRadio = document.querySelector('input[name="role"][value="student"]');
-                    const verificationCodeContainer = document.getElementById('verification-code-container');
-    
-                    function toggleVerificationCode() {
-                        if (professorRadio.checked) {
-                            verificationCodeContainer.classList.remove('hidden');
-                            document.getElementById('verification_code').setAttribute('required', 'required');
-                        } else {
-                            verificationCodeContainer.classList.add('hidden');
-                            document.getElementById('verification_code').removeAttribute('required');
-                        }
-                    }
-    
-                    professorRadio.addEventListener('change', toggleVerificationCode);
-                    studentRadio.addEventListener('change', toggleVerificationCode);
-    
-                    // Initialize on page load
-                    toggleVerificationCode();
-                });
-            </script>
+
 
             {{-- Name Field --}}
             <div>
@@ -170,51 +172,9 @@
                     {{ __('Register') }}
                 </x-button>
             </div>
-            <script>
-                document.getElementById('registerForm').addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const form = this;
-                    fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: form.name.value,
-                            email: form.email.value,
-                            password: form.password.value,
-                            password_confirmation: form.password_confirmation.value,
-                            role: form.role.value,
-                            verification_code: form.verification_code ? form.verification_code.value : null,
-                            terms: form.terms ? form.terms.checked : false
-                        })
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Account created successfully, please login.');
-                            window.location.href = "{{ route('login') }}";
-                        } else {
-                            return response.json().then(data => {
-                                let errors = data.errors;
-                                let message = '';
-                                for (const key in errors) {
-                                    message += errors[key].join(' ') + '\\n';
-                                }
-                                alert('Error:\\n' + message);
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        alert('An error occurred. Please try again.');
-                    });
-                });
-            </script>
 
             {{-- Demo Credentials --}}
             <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md">
-                
                 
             </div>
         </form>
@@ -222,40 +182,92 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Role card selection
-            const roleCards = document.querySelectorAll('.role-card');
-            
-            roleCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Remove active state from all cards
-                    roleCards.forEach(c => {
-                        c.classList.remove('border-purple-500', 'bg-purple-50');
-                        const icon = c.querySelector('.rounded-full');
-                        icon.classList.remove('bg-purple-500');
-                        icon.classList.add('bg-gray-200');
-                    });
-                    
-                    // Add active state to clicked card
-                    this.classList.add('border-purple-500', 'bg-purple-50');
-                    const icon = this.querySelector('.rounded-full');
-                    icon.classList.remove('bg-gray-200');
-                    icon.classList.add('bg-purple-500');
-                    
-                    // Check the radio button
-                    const radio = this.querySelector('input[type="radio"]');
-                    radio.checked = true;
-                });
-            });
+            const professorRadio = document.querySelector('input[name="role"][value="professor"]');
+            const studentRadio = document.querySelector('input[name="role"][value="student"]');
+            const verificationCodeContainer = document.getElementById('verification-code-container');
+            const departmentContainer = document.getElementById('department-container');
+            const yearContainer = document.getElementById('year-container'); // تم إضافة متغير لحاوية السنة
 
-            // Form validation
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const roleSelected = document.querySelector('input[name="role"]:checked');
-                if (!roleSelected) {
-                    e.preventDefault();
-                    alert('Please select your role');
-                    return false;
+            // دالة التحكم بظهور الحقول
+            function toggleFields() {
+                // إخفاء جميع الحقول المتعلقة بالدور أولاً (لإعادة التعيين)
+                verificationCodeContainer.classList.add('hidden');
+                document.getElementById('verification_code').removeAttribute('required');
+                
+                departmentContainer.classList.add('hidden');
+                document.getElementById('department_id').removeAttribute('required');
+                
+                yearContainer.classList.add('hidden');
+                document.getElementById('year').removeAttribute('required');
+
+                // إظهار الحقول المناسبة حسب الدور المُختار
+                if (professorRadio.checked) {
+                    verificationCodeContainer.classList.remove('hidden');
+                    document.getElementById('verification_code').setAttribute('required', 'required');
+                } else if (studentRadio.checked) {
+                    departmentContainer.classList.remove('hidden');
+                    document.getElementById('department_id').setAttribute('required', 'required');
+                    
+                    yearContainer.classList.remove('hidden');
+                    document.getElementById('year').setAttribute('required', 'required');
                 }
+            }
+
+            // الاستماع لتغييرات اختيار الدور
+            professorRadio.addEventListener('change', toggleFields);
+            studentRadio.addEventListener('change', toggleFields);
+
+            // تهيئة حالة الحقول عند تحميل الصفحة
+            toggleFields();
+
+            // منطق إرسال النموذج باستخدام fetch API (كما كان موجوداً لديك)
+            document.getElementById('registerForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const form = this;
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: form.name.value,
+                        email: form.email.value,
+                        password: form.password.value,
+                        password_confirmation: form.password_confirmation.value,
+                        role: form.role.value,
+                        verification_code: form.verification_code ? form.verification_code.value : null,
+                        department_id: form.department_id ? form.department_id.value : null, // إضافة حقل القسم
+                        year: form.year ? form.year.value : null, // إضافة حقل السنة
+                        terms: form.terms ? form.terms.checked : false
+                    })
+                })
+.then(response => {
+    if (response.ok) {
+        alert('Account created successfully, please login.');
+        window.location.href = "{{ route('login') }}";
+    } else {
+        return response.json().then(data => {
+            console.log('Error response data:', data);
+            let message = 'Unknown error occurred.';
+            if (data.errors) {
+                message = '';
+                for (const key in data.errors) {
+                    message += data.errors[key].join(' ') + '\n';
+                }
+            } else if (data.message) {
+                message = data.message;
+            }
+            alert('Error:\n' + message);
+        }).catch(() => {
+            alert('Error: Unable to parse error response.');
+        });
+    }
+})
+.catch(error => {
+    alert('An error occurred. Please try again.');
+});
             });
         });
     </script>

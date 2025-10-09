@@ -113,6 +113,10 @@ Route::middleware([ProfessorMiddleware::class])->prefix('professor')->name('prof
 });
 
 // مسارات الطالب (Student Routes)
+use App\Http\Controllers\Auth\RegisteredUserController;
+
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+
 Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.')->group(function () {
     Route::get('dashboard', function () {
         return view('student.dashboard');

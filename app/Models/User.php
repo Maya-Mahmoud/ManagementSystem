@@ -10,6 +10,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Department;
+use App\Models\Student;
 
 class User extends Authenticatable
 {
@@ -33,6 +35,7 @@ class User extends Authenticatable
         'password',
         'role',
         'status',
+        'department_id',
         'created_at',
     ];
     /**
@@ -76,5 +79,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
     }
 }
