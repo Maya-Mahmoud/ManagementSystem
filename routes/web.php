@@ -117,8 +117,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 
+use App\Http\Controllers\StudentDashboardController;
+
 Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.')->group(function () {
-    Route::get('dashboard', function () {
-        return view('student.dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
 });
