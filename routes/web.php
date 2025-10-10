@@ -121,4 +121,5 @@ use App\Http\Controllers\StudentDashboardController;
 
 Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.')->group(function () {
     Route::get('dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+    Route::get('subjects', [StudentDashboardController::class, 'subjects'])->name('subjects');
 });

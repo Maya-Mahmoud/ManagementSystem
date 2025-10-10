@@ -19,6 +19,7 @@ class Lecture extends Model
         'end_time',
         'max_students',
         'qr_code',
+        'department_id',
     ];
 
     public function hall()
@@ -29,5 +30,10 @@ class Lecture extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }
