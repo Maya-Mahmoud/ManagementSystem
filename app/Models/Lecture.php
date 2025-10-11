@@ -20,6 +20,7 @@ class Lecture extends Model
         'max_students',
         'qr_code',
         'department_id',
+        'subject_id',
     ];
 
     public function hall()

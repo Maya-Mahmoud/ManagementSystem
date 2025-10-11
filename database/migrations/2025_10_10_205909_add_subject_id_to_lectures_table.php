@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -12,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lectures', function (Blueprint $table) {
-            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->foreignId('subject_id')->nullable()->after('title')->constrained()->onDelete('cascade');
         });
     }
 

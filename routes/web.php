@@ -89,6 +89,8 @@ Route::middleware([AdminOrProfessorMiddleware::class])
         });
 
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');
+
+        Route::resource('subjects', SubjectController::class);
     });
 
 // مسارات البروفيسور (Professor Routes) - محمية بـ AdminOrProfessorMiddleware

@@ -1,11 +1,13 @@
 <x-admin-layout>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Page Header -->
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Subjects Management</h1>
             <p class="text-gray-600">Manage lecture subjects</p>
         </div>
-   <!-- Sub Navigation -->
+
+        <!-- Sub Navigation -->
         <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="px-6 py-4">
                 <nav class="flex space-x-8">
@@ -36,70 +38,14 @@
                 </nav>
             </div>
         </div>
-        <!-- Filters -->
-        <div class="bg-white shadow-sm rounded-lg mb-6">
-            <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Filter Subjects</h3>
-                <form method="GET" action="{{ route('admin.subjects') }}" class="flex flex-wrap gap-4 items-end">
-                    <div class="flex-1 min-w-0">
-                        <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                        <select name="year" id="year" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="">All Years</option>
-                            <option value="first" {{ request('year') == 'first' ? 'selected' : '' }}>First</option>
-                            <option value="second" {{ request('year') == 'second' ? 'selected' : '' }}>Second</option>
-                            <option value="third" {{ request('year') == 'third' ? 'selected' : '' }}>Third</option>
-                            <option value="fourth" {{ request('year') == 'fourth' ? 'selected' : '' }}>Fourth</option>
-                            <option value="fifth" {{ request('year') == 'fifth' ? 'selected' : '' }}>Fifth</option>
-                        </select>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <label for="semester" class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
-                        <select name="semester" id="semester" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="">All Semesters</option>
-                            <option value="first" {{ request('semester') == 'first' ? 'selected' : '' }}>First</option>
-                            <option value="second" {{ request('semester') == 'second' ? 'selected' : '' }}>Second</option>
-                        </select>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <label for="department" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                        <select name="department" id="department" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="">All Departments</option>
-                            <option value="communications" {{ request('department') == 'communications' ? 'selected' : '' }}>Communications</option>
-                            <option value="energy" {{ request('department') == 'energy' ? 'selected' : '' }}>Energy</option>
-                            <option value="marine" {{ request('department') == 'marine' ? 'selected' : '' }}>Marine</option>
-                            <option value="design_and_production" {{ request('department') == 'design_and_production' ? 'selected' : '' }}>Design and Production</option>
-                            <option value="computers" {{ request('department') == 'computers' ? 'selected' : '' }}>Computers</option>
-                            <option value="medical" {{ request('department') == 'medical' ? 'selected' : '' }}>Medical</option>
-                            <option value="mechatronics" {{ request('department') == 'mechatronics' ? 'selected' : '' }}>Mechatronics</option>
-                            <option value="power" {{ request('department') == 'power' ? 'selected' : '' }}>Power</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-2">
-                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                          search
-                        </button>
-                <a href="{{ route('admin.subjects') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                    Clear
-                </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-     
 
         <!-- Subjects List -->
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-6 flex justify-between items-center border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Subjects</h3>
+                <h3 class="text-lg font-medium text-gray-900">Lecture Subjects</h3>
                 <button id="addSubjectBtn" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded">+ Add Subject</button>
             </div>
             <div class="p-6">
-                @if(session('success'))
-                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                        {{ session('success') }}
-                    </div>
-                @endif
                 @if($subjects->isEmpty())
                     <p class="text-gray-600">No subjects found.</p>
                 @else
@@ -107,7 +53,8 @@
                         @foreach($subjects as $subject)
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <h4 class="text-md font-medium text-gray-900">{{ $subject->name }}</h4>
-                                <p class="text-sm text-gray-600">Semester: {{ ucfirst($subject->semester) }}, Year: {{ ucfirst($subject->year) }}, Department: {{ ucfirst(str_replace('_', ' ', $subject->department)) }}</p>
+                                <p class="text-sm text-gray-600">Year: {{ ucfirst($subject->year) }} | Semester: {{ ucfirst($subject->semester) }} | Department: {{ ucfirst($subject->department) }}</p>
+                                <p class="text-sm text-gray-600">{{ \App\Models\Lecture::where('subject_id', $subject->id)->count() }} lectures</p>
                             </div>
                         @endforeach
                     </div>
@@ -119,24 +66,34 @@
         <div id="addSubjectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                 <div class="mt-3">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Subject</h3>
-                    <form action="{{ route('admin.subjects.store') }}" method="POST">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Add New Subject</h3>
+                        <button id="closeAddModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form id="addSubjectForm" action="{{ route('admin.subjects.store') }}" method="POST">
                         @csrf
                         <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Subject Name</label>
-                            <input type="text" name="name" id="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject Name</label>
+                            <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                         </div>
+
                         <div class="mb-4">
-                            <label for="semester" class="block text-sm font-medium text-gray-700">Semester</label>
-                            <select name="semester" id="semester" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                            <select name="semester" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                                 <option value="">Select Semester</option>
                                 <option value="first">First</option>
                                 <option value="second">Second</option>
                             </select>
                         </div>
+
                         <div class="mb-4">
-                            <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
-                            <select name="year" id="year" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                            <select name="year" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                                 <option value="">Select Year</option>
                                 <option value="first">First</option>
                                 <option value="second">Second</option>
@@ -145,23 +102,19 @@
                                 <option value="fifth">Fifth</option>
                             </select>
                         </div>
+
                         <div class="mb-4">
-                            <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
-                            <select name="department" id="department" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                            <select name="department" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                                 <option value="">Select Department</option>
                                 <option value="communications">Communications</option>
                                 <option value="energy">Energy</option>
-                                <option value="marine">Marine</option>
-                                <option value="design_and_production">Design and Production</option>
-                                <option value="computers">Computers</option>
-                                <option value="medical">Medical</option>
-                                <option value="mechatronics">Mechatronics</option>
-                                <option value="power">Power</option>
                             </select>
                         </div>
-                        <div class="flex justify-end">
-                            <button type="button" id="closeModalBtn" class="mr-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Cancel</button>
-                            <button type="submit" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700">Add Subject</button>
+
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="cancelAddBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700">Create</button>
                         </div>
                     </form>
                 </div>
@@ -169,22 +122,38 @@
         </div>
 
         <script>
-            const addSubjectBtn = document.getElementById('addSubjectBtn');
-            const addSubjectModal = document.getElementById('addSubjectModal');
-            const closeModalBtn = document.getElementById('closeModalBtn');
+            document.addEventListener('DOMContentLoaded', function() {
+                const addSubjectBtn = document.getElementById('addSubjectBtn');
+                const addSubjectModal = document.getElementById('addSubjectModal');
+                const closeAddModal = document.getElementById('closeAddModal');
+                const cancelAddBtn = document.getElementById('cancelAddBtn');
+                const addSubjectForm = document.getElementById('addSubjectForm');
 
-            addSubjectBtn.addEventListener('click', function() {
-                addSubjectModal.classList.remove('hidden');
-            });
+                // Show modal
+                addSubjectBtn.addEventListener('click', function() {
+                    addSubjectModal.classList.remove('hidden');
+                });
 
-            closeModalBtn.addEventListener('click', function() {
-                addSubjectModal.classList.add('hidden');
-            });
-
-            addSubjectModal.addEventListener('click', function(e) {
-                if (e.target === addSubjectModal) {
+                // Hide modal
+                function hideModal() {
                     addSubjectModal.classList.add('hidden');
+                    addSubjectForm.reset();
                 }
+
+                closeAddModal.addEventListener('click', hideModal);
+                cancelAddBtn.addEventListener('click', hideModal);
+
+                // Close modal when clicking outside
+                addSubjectModal.addEventListener('click', function(e) {
+                    if (e.target === addSubjectModal) {
+                        hideModal();
+                    }
+                });
+
+                // Handle form submission
+                addSubjectForm.addEventListener('submit', function(e) {
+                    // Optional: Add loading state or validation
+                });
             });
         </script>
     </div>

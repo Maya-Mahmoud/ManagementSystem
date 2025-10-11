@@ -24,7 +24,8 @@ class LectureController extends Controller
 
         $halls = Hall::all();
         $subjects = \App\Models\Subject::all();
-        return view('admin.lecture-management', compact('halls', 'subjects'));
+        $departments = \App\Models\Department::all();
+        return view('admin.lecture-management', compact('halls', 'subjects', 'departments'));
     }
 
     /**
@@ -45,15 +46,37 @@ class LectureController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'subject' => 'required|string|max:255',
-                //'professor' => 'required|string|max:255', // Removed professor from validation
+                'department' => 'required|string',
                 'hall_id' => 'required|exists:halls,id',
                 'start_time' => 'required|date',
                 'end_time' => 'required|date|after:start_time',
-                'max_students' => 'nullable|integer|min:1', // Changed to nullable
+                'max_students' => 'nullable|integer|min:1',
                 'recurringLecture' => 'nullable|boolean',
                 'repeat_pattern' => ['nullable', Rule::in(['daily', 'weekly', 'monthly'])],
                 'end_date' => 'nullable|date|after:start_time',
             ]);
+
+            Log::info('Lecture creation attempt', ['validated_data' => $validated]);
+
+            // Map Arabic department names to English DB names
+            $departmentMapping = [
+                'الاتصالات' => 'communications',
+                'الطاقة' => 'energy',
+                'البحرية' => 'marine',
+                'التصميم والإنتاج' => 'design_and_production',
+                'الحواسيب' => 'computers',
+                'الطبية' => 'medical',
+                'الميكاترونيكس' => 'mechatronics',
+                'الطاقة' => 'power',
+            ];
+
+            $dbDepartmentName = $departmentMapping[$validated['department']] ?? $validated['department'];
+            $department = \App\Models\Department::whereRaw('LOWER(name) = LOWER(?)', [$dbDepartmentName])->firstOrFail();
+            $validated['department_id'] = $department->id;
+
+            // Get subject_id from subject name (case insensitive)
+            $subject = \App\Models\Subject::whereRaw('LOWER(name) = LOWER(?)', [$validated['subject']])->firstOrFail();
+            $validated['subject_id'] = $subject->id;
 
             // Always set professor field to logged-in user's name
             $validated['professor'] = Auth::user()->name;
@@ -81,8 +104,10 @@ class LectureController extends Controller
                     $lectures[] = [
                         'title' => $validated['title'],
                         'subject' => $validated['subject'],
+                        'subject_id' => $validated['subject_id'],
                         'professor' => $validated['professor'],
                         'hall_id' => $validated['hall_id'],
+                        'department_id' => $validated['department_id'],
                         'start_time' => $start,
                         'end_time' => $end,
                         'max_students' => $validated['max_students'],
@@ -100,9 +125,10 @@ class LectureController extends Controller
                 ], 201);
             }
 
-            // Remove professor from validated before create to avoid mass assignment error
+            // Remove professor, department from validated before create to avoid mass assignment error
             $professorName = $validated['professor'] ?? null;
             unset($validated['professor']);
+            unset($validated['department']);
 
             $lecture = Lecture::create($validated);
 

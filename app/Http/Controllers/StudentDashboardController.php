@@ -9,17 +9,41 @@ use App\Models\Subject;
 
 class StudentDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $student = $user->student;
 
-        // Fetch upcoming lectures for the student
-        $lectures = Lecture::where('user_id', $user->id)
-            ->where('start_time', '>=', now())
-            ->orderBy('start_time')
-            ->get();
+        $departmentId = $student->department_id;
+        $studentYear = strtolower($student->year ?? 'first');
+        $studentSemester = strtolower($student->semester ?? 'first');
 
-        return view('student.dashboard', compact('lectures'));
+        $year = strtolower($request->input('year', $studentYear));
+        $semester = strtolower($request->input('semester', $studentSemester));
+        $date = $request->input('date');
+
+        $query = Lecture::join('subjects', 'lectures.subject', '=', 'subjects.name')
+            ->where('lectures.department_id', $departmentId)
+            ->where('subjects.year', $year)
+            ->where('subjects.semester', $semester)
+            ->select('lectures.*')
+            ->with('hall');
+
+        if ($date) {
+            $startOfDay = \Carbon\Carbon::parse($date)->startOfDay();
+            $endOfDay = \Carbon\Carbon::parse($date)->endOfDay();
+            $query->whereBetween('lectures.start_time', [$startOfDay, $endOfDay]);
+        } else {
+            $query->where('lectures.start_time', '>=', now());
+        }
+
+        $lectures = $query->orderBy('lectures.start_time')->get();
+
+        // Display versions
+        $displayYear = ucfirst($year);
+        $displaySemester = ucfirst($semester);
+
+        return view('student.dashboard', compact('lectures', 'displayYear', 'displaySemester', 'date'));
     }
 
     public function subjects(Request $request)
