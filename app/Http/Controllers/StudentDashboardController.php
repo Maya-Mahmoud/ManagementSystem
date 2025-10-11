@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Lecture;
 use App\Models\Subject;
+use App\Models\LectureAttendance;
+use App\Models\StudentSubjectAttendance;
 
 class StudentDashboardController extends Controller
 {
@@ -69,5 +71,41 @@ class StudentDashboardController extends Controller
             ->get();
 
         return view('student.subjects', compact('subjects', 'displayYear', 'displaySemester'));
+    }
+
+    public function scanQr()
+    {
+        return view('student.scan-qr');
+    }
+
+    public function attendance(Request $request)
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        $year = strtolower($request->input('year', $student->year ?? 'first'));
+        $semester = strtolower($request->input('semester', $student->semester ?? 'first'));
+
+        $displayYear = ucfirst($year);
+        $displaySemester = ucfirst($semester);
+
+        // Get attendance data from student_subject_attendances for this student's subjects
+        $attendanceData = StudentSubjectAttendance::join('subjects', 'student_subject_attendances.subject_id', '=', 'subjects.id')
+            ->join('students', 'student_subject_attendances.student_id', '=', 'students.id')
+            ->where('students.user_id', $user->id)
+            ->where('subjects.year', $year)
+            ->where('subjects.semester', $semester)
+            ->where('subjects.department', $student->department->name)
+            ->select('subjects.name', 'student_subject_attendances.presence_count', 'student_subject_attendances.absence_count')
+            ->get()
+            ->keyBy('name')
+            ->map(function ($item) {
+                return [
+                    'present' => $item->presence_count,
+                    'absent' => $item->absence_count
+                ];
+            });
+
+        return view('student.attendance', compact('attendanceData', 'displayYear', 'displaySemester'));
     }
 }

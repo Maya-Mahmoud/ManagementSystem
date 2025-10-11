@@ -10,6 +10,10 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Writer;
 use Illuminate\Support\Str;
+use App\Models\LectureAttendance;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\StudentSubjectAttendance;
 
 class QrCodeController extends Controller
 {
@@ -37,8 +41,45 @@ class QrCodeController extends Controller
         $lecture->qr_code = $qrCode;
         $lecture->save();
 
+    // Initialize attendance records for eligible students as 'absent'
+    $subject = Subject::find($lecture->subject_id);
+    if ($subject) {
+        $eligibleStudents = Student::where('department_id', $lecture->department_id)
+            ->where('year', $subject->year)
+            ->where(function($q) use ($subject) {
+                $q->where('semester', $subject->semester)
+                  ->orWhereNull('semester');
+            })
+            ->pluck('id');
+
+        foreach ($eligibleStudents as $studentId) {
+            LectureAttendance::firstOrCreate(
+                [
+                    'student_id' => $studentId,
+                    'lecture_id' => $lecture->id,
+                ],
+                [
+                    'status' => 'absent',
+                    'scanned_at' => null,
+                ]
+            );
+
+            // Increment absence_count in student_subject_attendances
+            StudentSubjectAttendance::firstOrCreate(
+                [
+                    'student_id' => $studentId,
+                    'subject_id' => $lecture->subject_id,
+                ],
+                [
+                    'presence_count' => 0,
+                    'absence_count' => 0,
+                ]
+            )->increment('absence_count');
+        }
+    }
+
         // URL for attendance scan
-        $attendanceUrl = url('/student/attendance/scan?qr=' . $qrCode);
+        $attendanceUrl = url('/student/scan-qr?qr=' . $qrCode);
 
         // Generate QR code SVG using BaconQrCode directly
         $renderer = new ImageRenderer(

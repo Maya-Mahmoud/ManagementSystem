@@ -1,33 +1,36 @@
-# Fixing Lecture Addition Error
+# QR Code Attendance System Implementation
 
-## Current Work
-Debugging and fixing the "Failed to schedule lecture" error in the admin interface when adding lectures. Root cause: Required 'subject' field not populated in DB insert due to unset in controller.
+## Current Task: Implement QR-based attendance for lectures
 
-## Key Technical Concepts
-- Laravel Eloquent model creation and mass assignment.
-- Controller validation and data handling for Lecture model.
-- Handling single vs. recurring lecture creation.
-- Legacy DB field 'subject' (string name) alongside relational 'subject_id'.
+### Step 1: Create UI for QR Scanning (Priority)
+- [x] Add route: GET /student/scan-qr
+- [x] Create method in StudentDashboardController: scanQr() - returns view('student.scan-qr')
+- [x] Create resources/views/student/scan-qr.blade.php with UI matching screenshot:
+  - Header: "Scan QR Code to mark attendance"
+  - Scan area: Black placeholder box with "Ready to scan" and circular icon
+  - Button: "Start Scan" (purple)
+  - Instructions: How to scan (1. Point camera, 2. Hold steady, 3. Wait for confirmation)
+  - Use student-app layout
+- [x] Update layouts/student-app.blade.php: Add navigation link to "Scan QR"
+- [ ] Test UI: Access as student, verify page loads correctly
 
-## Relevant Files and Code
-- **app/Http/Controllers/Admin/LectureController.php**: Main file to edit. Store method unsets 'subject' before create/insert, causing SQL error (Field 'subject' doesn't have a default value).
-  - Non-recurring: unset($validated['subject']); removes it from create().
-  - Recurring: $lectures[] array lacks 'subject' key.
+### Step 2: Backend Implementation (After UI Approval)
+- [x] Create migration: create_lecture_attendances_table (student_id, lecture_id, status enum('present','absent'), scanned_at)
+- [x] Create LectureAttendance model with relationships to Student and Lecture
+- [x] Update QrCodeController::generateQrCode: After generating QR, create 'absent' records for eligible students in the lecture's department/year/subject
+- [x] Add POST /student/scan-qr route to AttendanceController::scanQr: Decode QR (lecture ID), check eligibility, update to 'present', prevent duplicates
+- [x] Integrate JS QR scanner in scan-qr.blade.php (e.g., html5-qrcode lib via CDN)
+- [x] Add attendance() method to StudentDashboardController: Fetch grouped by subject (presents: count where status='present', absents: count where status='absent' and QR generated)
+- [x] Create student/attendance.blade.php: List subjects with attendance/absence counts
+- [x] Add route: GET /student/attendance
+- [x] Update dashboard.blade.php: Add link to attendance page
 
-## Problem Solving
-- Logs confirmed SQL insert omits 'subject' (required, no default).
-- Form sends subject name; lookup for subject_id succeeds, but legacy field needs population.
-- Solution: Include 'subject' in inserts without schema changes.
+### Step 3: Testing and Follow-up
+- [x] Run migration: php artisan migrate
+- [ ] Test QR generation: Creates absent records
+- [ ] Test scanning: Updates to present, increments count
+- [ ] Test attendance page: Displays correct counts per subject
+- [ ] Handle edge cases: Invalid QR, already scanned, ineligible student
+- [ ] Update Attendance model if needed (deprecate old one?)
 
-## Pending Tasks and Next Steps
-- [ ] Create TODO.md (current step).
-- [ ] Edit app/Http/Controllers/Admin/LectureController.php:
-  - Remove unset($validated['subject']); in non-recurring path.
-  - Add 'subject' => $validated['subject'] to each $lectures[] array in recurring path.
-- [ ] Test: Add a single lecture via admin form; confirm success and no error in logs.
-- [ ] Test recurring lecture addition.
-- [ ] If successful, clear caches: php artisan view:clear && php artisan config:clear.
-- [ ] Update TODO.md with completion status.
-- [ ] Use attempt_completion to finalize.
-
-Quote from recent conversation: "the error occurs because the required 'subject' field is unset before inserting into the database. The plan is to edit `app/Http/Controllers/Admin/LectureController.php` to include the subject name in both single and recurring lecture creations."
+Progress: Starting with UI creation.

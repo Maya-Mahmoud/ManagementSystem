@@ -70,8 +70,8 @@
                     <div class="flex space-x-8" aria-label="Tabs" role="tablist">
                         <a href="{{ route('student.dashboard') }}" class="{{ request()->routeIs('student.dashboard') ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" {{ request()->routeIs('student.dashboard') ? 'aria-current="page"' : '' }} role="tab">My Schedule</a>
                         <a href="{{ route('student.subjects') }}" class="{{ request()->routeIs('student.subjects') ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" {{ request()->routeIs('student.subjects') ? 'aria-current="page"' : '' }} role="tab">Subjects</a>
-                        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" role="tab">Scan QR</a>
-                        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" role="tab">Calendar</a>
+                        <a href="{{ route('student.scan-qr') }}" class="{{ request()->routeIs('student.scan-qr') ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" {{ request()->routeIs('student.scan-qr') ? 'aria-current="page"' : '' }} role="tab">Scan QR</a>
+                        <a href="{{ route('student.attendance') }}" class="{{ request()->routeIs('student.attendance') ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" {{ request()->routeIs('student.attendance') ? 'aria-current="page"' : '' }} role="tab">My presence</a>
                     </div>
                 </div>
             </nav>

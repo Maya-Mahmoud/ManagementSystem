@@ -10,6 +10,9 @@ use App\Livewire\Admin\Classrooms;
 use App\Livewire\Admin\Users;
 use App\Http\Controllers\Admin\LectureController;
 use App\Http\Controllers\Professor\HallController;
+
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Admin\SubjectController;
 use Illuminate\Support\Facades\Auth;
 
 Route::middleware([AdminOrProfessorMiddleware::class])->prefix('admin/api')->group(function () {
@@ -90,7 +93,7 @@ Route::middleware([AdminOrProfessorMiddleware::class])
 
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');
 
-        Route::resource('subjects', SubjectController::class);
+       
     });
 
 // مسارات البروفيسور (Professor Routes) - محمية بـ AdminOrProfessorMiddleware
@@ -124,4 +127,7 @@ use App\Http\Controllers\StudentDashboardController;
 Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.')->group(function () {
     Route::get('dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
     Route::get('subjects', [StudentDashboardController::class, 'subjects'])->name('subjects');
+    Route::get('scan-qr', [StudentDashboardController::class, 'scanQr'])->name('scan-qr');
+    Route::post('scan-qr', [AttendanceController::class, 'scanQr'])->name('scan-qr.scan');
+    Route::get('attendance', [StudentDashboardController::class, 'attendance'])->name('attendance');
 });
