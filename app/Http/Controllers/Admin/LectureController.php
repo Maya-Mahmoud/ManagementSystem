@@ -19,7 +19,11 @@ class LectureController extends Controller
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            return Lecture::with(['hall', 'user'])->get();
+            $query = Lecture::with(['hall', 'user']);
+            if (Auth::user()->role === 'professor') {
+                $query->where('user_id', Auth::id());
+            }
+            return $query->get();
         }
 
         $halls = Hall::all();
@@ -177,9 +181,12 @@ class LectureController extends Controller
             return response()->json(['error' => 'Date parameter is required'], 400);
         }
 
-        $lectures = Lecture::with(['hall', 'user'])
-            ->whereDate('start_time', $date)
-            ->get();
+        $query = Lecture::with(['hall', 'user'])
+            ->whereDate('start_time', $date);
+        if (Auth::user()->role === 'professor') {
+            $query->where('user_id', Auth::id());
+        }
+        $lectures = $query->get();
 
         return response()->json($lectures);
     }
