@@ -51,11 +51,11 @@
                         </div>
                         <div class="ml-4">
                             <div class="flex items-center">
-                                <span class="text-2xl font-bold text-gray-900">5</span>
-                                <span class="text-green-600 text-sm font-medium ml-2">↗ +12%</span>
+                                <span class="text-2xl font-bold text-gray-900">{{ $totalUsers }}</span>
+                                <span class="text-green-600 text-sm font-medium ml-2">↗ {{ $userChange }}</span>
                             </div>
                             <p class="text-sm text-gray-600">Total Users</p>
-                            <p class="text-xs text-gray-500">2 Professors, 3 Students</p>
+                            <p class="text-xs text-gray-500">{{ $admins }} Admins, {{ $professors }} Professors, {{ $students }} Students</p>
                         </div>
                     </div>
                 </div>
@@ -72,11 +72,11 @@
                         </div>
                         <div class="ml-4">
                             <div class="flex items-center">
-                                <span class="text-2xl font-bold text-gray-900">50%</span>
-                                <span class="text-green-600 text-sm font-medium ml-2">↗ +8%</span>
+                                <span class="text-2xl font-bold text-gray-900">{{ $hallUtilization }}%</span>
+                                <span class="text-green-600 text-sm font-medium ml-2">↗ {{ $hallChange }}</span>
                             </div>
                             <p class="text-sm text-gray-600">Hall Utilization</p>
-                            <p class="text-xs text-gray-500">2/4 halls booked</p>
+                            <p class="text-xs text-gray-500">{{ $bookedHalls }}/{{ $totalHalls }} halls booked</p>
                         </div>
                     </div>
                 </div>
@@ -93,11 +93,11 @@
                         </div>
                         <div class="ml-4">
                             <div class="flex items-center">
-                                <span class="text-2xl font-bold text-gray-900">0</span>
-                                <span class="text-green-600 text-sm font-medium ml-2">↗ +5%</span>
+                                <span class="text-2xl font-bold text-gray-900">{{ $todayLectures }}</span>
+                                <span class="text-green-600 text-sm font-medium ml-2">↗ {{ $lectureChange }}</span>
                             </div>
                             <p class="text-sm text-gray-600">Today's Lectures</p>
-                            <p class="text-xs text-gray-500">4 total lectures</p>
+                            <p class="text-xs text-gray-500">{{ $totalLectures }} total lectures</p>
                         </div>
                     </div>
                 </div>
@@ -114,8 +114,8 @@
                         </div>
                         <div class="ml-4">
                             <div class="flex items-center">
-                                <span class="text-2xl font-bold text-gray-900">98.5%</span>
-                                <span class="text-green-600 text-sm font-medium ml-2">↗ +0.2%</span>
+                                <span class="text-2xl font-bold text-gray-900">{{ $health }}</span>
+                                <span class="text-green-600 text-sm font-medium ml-2">↗ {{ $healthChange }}</span>
                             </div>
                             <p class="text-sm text-gray-600">System Health</p>
                             <p class="text-xs text-gray-500">All systems operational</p>
@@ -136,20 +136,29 @@
                         <div class="space-y-3">
                             <div>
                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="text-sm font-medium text-gray-700">Professors</span>
-                                    <span class="text-sm text-gray-600">2</span>
+                                    <span class="text-sm font-medium text-gray-700">Admins</span>
+                                    <span class="text-sm text-gray-600">{{ $admins }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 40%"></div>
+                                    <div class="bg-purple-600 h-2 rounded-full" style="width: {{ $adminPercent }}%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Professors</span>
+                                    <span class="text-sm text-gray-600">{{ $professors }}</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $professorPercent }}%"></div>
                                 </div>
                             </div>
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-sm font-medium text-gray-700">Students</span>
-                                    <span class="text-sm text-gray-600">2</span>
+                                    <span class="text-sm text-gray-600">{{ $students }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-green-600 h-2 rounded-full" style="width: 40%"></div>
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ $studentPercent }}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -162,19 +171,19 @@
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-sm font-medium text-gray-700">Booked Halls</span>
-                                    <span class="text-sm text-gray-600">2</span>
+                                    <span class="text-sm text-gray-600">{{ $bookedHalls }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-red-600 h-2 rounded-full" style="width: 50%"></div>
+                                    <div class="bg-red-600 h-2 rounded-full" style="width: {{ $bookedPercent }}%"></div>
                                 </div>
                             </div>
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-sm font-medium text-gray-700">Available Halls</span>
-                                    <span class="text-sm text-gray-600">2</span>
+                                    <span class="text-sm text-gray-600">{{ $availableHalls }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-green-600 h-2 rounded-full" style="width: 50%"></div>
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ $availablePercent }}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -188,57 +197,27 @@
             <div class="p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
                 <div class="space-y-4">
+                    @foreach($recentUsers as $user)
                     <div class="flex items-center justify-between py-3 border-b border-gray-200">
                         <div class="flex items-center">
-                            <div class="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full">
-                                <span class="text-sm font-medium text-purple-600">SA</span>
+                            <div class="flex items-center justify-center w-10 h-10 bg-{{ $user->role == 'admin' ? 'purple' : ($user->role == 'professor' ? 'blue' : 'green') }}-100 rounded-full">
+                                <span class="text-sm font-medium text-{{ $user->role == 'admin' ? 'purple' : ($user->role == 'professor' ? 'blue' : 'green') }}-600">{{ substr($user->name, 0, 2) }}</span>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-900">System Admin</p>
-                                <p class="text-sm text-gray-500">admin@college.edu</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
+                                <p class="text-sm text-gray-500">{{ $user->email }}</p>
                             </div>
                         </div>
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Admin</span>
+                        <span class="bg-{{ $user->role == 'admin' ? 'purple' : ($user->role == 'professor' ? 'blue' : 'green') }}-100 text-{{ $user->role == 'admin' ? 'purple' : ($user->role == 'professor' ? 'blue' : 'green') }}-800 text-xs px-2 py-1 rounded capitalize">{{ $user->role }}</span>
                     </div>
-
-                    <div class="flex items-center justify-between py-3 border-b border-gray-200">
-                        <div class="flex items-center">
-                            <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                                <span class="text-sm font-medium text-blue-600">DS</span>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-900">Dr. Smith</p>
-                                <p class="text-sm text-gray-500">smith@college.edu</p>
-                            </div>
+                    @endforeach
+                    @if($recentUsers->count() < 4)
+                        @for($i = $recentUsers->count(); $i < 4; $i++)
+                        <div class="flex items-center justify-between py-3 border-b border-gray-200 opacity-50">
+                            <span class="text-sm text-gray-500">No recent activity</span>
                         </div>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Professor</span>
-                    </div>
-
-                    <div class="flex items-center justify-between py-3 border-b border-gray-200">
-                        <div class="flex items-center">
-                            <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full">
-                                <span class="text-sm font-medium text-green-600">AJ</span>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-900">Alice Johnson</p>
-                                <p class="text-sm text-gray-500">alice@college.edu</p>
-                            </div>
-                        </div>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Student</span>
-                    </div>
-
-                    <div class="flex items-center justify-between py-3">
-                        <div class="flex items-center">
-                            <div class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
-                                <span class="text-sm font-medium text-gray-600">PJ</span>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-900">Prof. Johnson</p>
-                                <p class="text-sm text-gray-500">johnson@college.edu</p>
-                            </div>
-                        </div>
-                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Professor</span>
-                    </div>
+                        @endfor
+                    @endif
                 </div>
             </div>
         </div>
