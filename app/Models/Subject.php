@@ -13,6 +13,16 @@ class Subject extends Model
         'name',
         'semester',
         'year',
-        'department',
+        'department_id',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function lectures()
+    {
+        return $this->hasMany(Lecture::class);
+    }
 }

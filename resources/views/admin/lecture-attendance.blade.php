@@ -9,7 +9,7 @@
 
     <div class="flex justify-between items-center">
         <div>
-            <h3 class="text-3xl font-bold text-gray-900"> {{ $lecture->title }}</h3>
+            <h3 class="text-3xl font-bold text-gray-900"> {{ $lecture->subject }} : {{ $lecture->title }}</h3>
             
           
         </div>
@@ -95,11 +95,35 @@
                 <p class="text-sm text-gray-500">
                    {{ $lecture->subject }}
                 </p>
+                <p class="text-sm text-gray-500">
+                    Total Students: {{ $totalStudents }}
+                </p>
             </div>
         </div>
-        
+
     </div>
 </div>
+
+        <!-- Attendance Statistics -->
+        <div class="bg-white shadow-sm rounded-lg mb-6">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Attendance Statistics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-blue-600">Total Students</h4>
+                        <p class="text-2xl font-bold text-blue-900">{{ $totalStudents }}</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-green-600">Present</h4>
+                        <p class="text-2xl font-bold text-green-900">{{ $presentCount }}</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-red-600">Absent</h4>
+                        <p class="text-2xl font-bold text-red-900">{{ $absentCount }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Attendance List -->
         <div class="bg-white shadow-sm rounded-lg">

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Lecture;
 use App\Models\Hall;
+use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -13,9 +15,6 @@ use Illuminate\Validation\Rule;
 
 class LectureController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
@@ -27,23 +26,17 @@ class LectureController extends Controller
         }
 
         $halls = Hall::all();
-        $subjects = \App\Models\Subject::all();
+        $subjects = Subject::all();
         $departments = \App\Models\Department::all();
         return view('admin.lecture-management', compact('halls', 'subjects', 'departments'));
     }
 
-    /**
-     * Display the advanced scheduler page.
-     */
     public function advancedScheduler()
     {
         $halls = Hall::all();
         return view('admin.advanced-scheduler', compact('halls'));
     }
 
-    /**
-     * Store the newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -62,7 +55,6 @@ class LectureController extends Controller
 
             Log::info('Lecture creation attempt', ['validated_data' => $validated]);
 
-            // Map Arabic department names to English DB names
             $departmentMapping = [
                 'الاتصالات' => 'communications',
                 'الطاقة' => 'energy',
@@ -78,25 +70,19 @@ class LectureController extends Controller
             $department = \App\Models\Department::whereRaw('LOWER(name) = LOWER(?)', [$dbDepartmentName])->firstOrFail();
             $validated['department_id'] = $department->id;
 
-            // Get subject_id from subject name (case insensitive)
-            $subject = \App\Models\Subject::whereRaw('LOWER(name) = LOWER(?)', [$validated['subject']])->firstOrFail();
+            $subject = Subject::whereRaw('LOWER(name) = LOWER(?)', [$validated['subject']])->firstOrFail();
             $validated['subject_id'] = $subject->id;
 
-            // Always set professor field to logged-in user's name
             $validated['professor'] = Auth::user()->name;
-
             $validated['user_id'] = Auth::id();
 
             // Handle recurring lectures
             if (!empty($validated['recurringLecture']) && $validated['recurringLecture']) {
                 $startDate = new \DateTime($validated['start_time']);
                 $endDate = new \DateTime($validated['end_date']);
-                $intervalSpec = 'P1W'; // Default weekly
-                if ($validated['repeat_pattern'] === 'daily') {
-                    $intervalSpec = 'P1D';
-                } elseif ($validated['repeat_pattern'] === 'monthly') {
-                    $intervalSpec = 'P1M';
-                }
+                $intervalSpec = 'P1W';
+                if ($validated['repeat_pattern'] === 'daily') $intervalSpec = 'P1D';
+                elseif ($validated['repeat_pattern'] === 'monthly') $intervalSpec = 'P1M';
                 $interval = new \DateInterval($intervalSpec);
                 $period = new \DatePeriod($startDate, $interval, $endDate);
 
@@ -123,89 +109,81 @@ class LectureController extends Controller
                 }
                 Lecture::insert($lectures);
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Recurring lectures created successfully!',
-                ], 201);
+                return response()->json(['success' => true, 'message' => 'Recurring lectures created successfully!'], 201);
             }
 
-            // Remove professor, department from validated before create to avoid mass assignment error
             $professorName = $validated['professor'] ?? null;
             unset($validated['professor']);
             unset($validated['department']);
 
             $lecture = Lecture::create($validated);
-
-            // Generate unique QR code
             $lecture->qr_code = Str::uuid();
             $lecture->save();
 
-            // Update professor field separately
             if ($professorName) {
                 $lecture->professor = $professorName;
                 $lecture->save();
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Lecture created successfully!',
-                'data' => $lecture->load(['hall', 'user'])
-            ], 201);
+            return response()->json(['success' => true, 'message' => 'Lecture created successfully!', 'data' => $lecture->load(['hall', 'user'])], 201);
         } catch (\Exception $e) {
             Log::error('Error storing lecture: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to schedule lecture due to server error.',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to schedule lecture due to server error.', 'error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
+    public function showAttendance($id)
+    {
+        $lecture = Lecture::with(['hall', 'user', 'subject'])->findOrFail($id);
+        $attendances = \App\Models\LectureAttendance::with(['student.user'])
+            ->where('lecture_id', $id)
+            ->get();
+
+        // تحقق إن subject موجود ككائن
+        $subject = $lecture->subject instanceof Subject ? $lecture->subject : null;
+
+        $totalStudents = 0;
+        if ($subject) {
+            $totalStudents = Student::where('department_id', $subject->department_id)
+                ->where('year', $subject->year)
+                ->count();
+        }
+
+        $presentCount = $attendances->where('status', 'present')->count();
+        $absentCount = $totalStudents - $presentCount;
+
+        Log::info('Lecture Attendance Debug', [
+            'lecture_id' => $id,
+            'subject_id' => $subject ? $subject->id : null,
+            'department_id' => $subject ? $subject->department_id : null,
+            'year' => $subject ? $subject->year : null,
+            'totalStudents' => $totalStudents,
+            'presentCount' => $presentCount,
+            'absentCount' => $absentCount
+        ]);
+
+        return view('admin.lecture-attendance', compact('lecture', 'attendances', 'totalStudents', 'presentCount', 'absentCount'));
+    }
+
     public function show(string $id)
     {
         $lecture = Lecture::with(['hall', 'user'])->findOrFail($id);
-
         return response()->json($lecture);
     }
 
-    /**
-     * Get lectures for a specific date.
-     */
     public function lecturesByDate(Request $request)
     {
         $date = $request->query('date');
-        if (!$date) {
-            return response()->json(['error' => 'Date parameter is required'], 400);
-        }
+        if (!$date) return response()->json(['error' => 'Date parameter is required'], 400);
 
-        $query = Lecture::with(['hall', 'user'])
-            ->whereDate('start_time', $date);
-        if (Auth::user()->role === 'professor') {
-            $query->where('user_id', Auth::id());
-        }
-        $lectures = $query->get();
-
-        return response()->json($lectures);
+        $query = Lecture::with(['hall', 'user'])->whereDate('start_time', $date);
+        if (Auth::user()->role === 'professor') $query->where('user_id', Auth::id());
+        return response()->json($query->get());
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $lecture = Lecture::findOrFail($id);
-
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
@@ -215,7 +193,6 @@ class LectureController extends Controller
         ]);
 
         $lecture->update($validated);
-
         return response()->json([
             'success' => true,
             'message' => 'Lecture updated successfully!',
@@ -223,9 +200,6 @@ class LectureController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $lecture = Lecture::findOrFail($id);
@@ -237,22 +211,6 @@ class LectureController extends Controller
         ]);
     }
 
-    /**
-     * Show attendance for a specific lecture.
-     */
-    public function showAttendance($id)
-    {
-        $lecture = Lecture::with(['hall', 'user'])->findOrFail($id);
-        $attendances = \App\Models\LectureAttendance::with(['student.user'])
-            ->where('lecture_id', $id)
-            ->get();
-
-        return view('admin.lecture-attendance', compact('lecture', 'attendances'));
-    }
-
-    /**
-     * Export attendance data as CSV.
-     */
     public function exportAttendance($id)
     {
         $lecture = Lecture::findOrFail($id);
@@ -261,7 +219,6 @@ class LectureController extends Controller
             ->get();
 
         $filename = 'lecture_attendance_' . $lecture->id . '.csv';
-
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -269,11 +226,8 @@ class LectureController extends Controller
 
         $callback = function() use ($attendances) {
             $file = fopen('php://output', 'w');
-
-            // CSV headers
             fputcsv($file, ['Student Name', 'Status', 'Scanned At']);
 
-            // CSV data
             foreach ($attendances as $attendance) {
                 fputcsv($file, [
                     $attendance->student->user->name,
