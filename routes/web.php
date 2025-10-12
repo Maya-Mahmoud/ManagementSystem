@@ -88,6 +88,8 @@ Route::middleware([AdminOrProfessorMiddleware::class])
             Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class);
             Route::apiResource('lectures', LectureController::class); // إضافة هذا لدعم POST وCRUD الكامل
             Route::apiResource('users', \App\Http\Controllers\Admin\UsersController::class);
+            Route::get('lectures/{id}/attendance', [LectureController::class, 'showAttendance'])->name('lectures.attendance');
+            Route::get('lectures/{id}/attendance/export', [LectureController::class, 'exportAttendance'])->name('lectures.attendance.export');
         });
 
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');

@@ -23,14 +23,15 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center h-16">
                         <!-- Logo -->
-                        <div class="flex items-center">
-                            <div class="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg mr-3">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h1 class="text-xl font-semibold text-gray-900">Hall Manager</h1>
+                       <div class="flex items-center">
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 
+                bg-gradient-to-br from-indigo-500 to-purple-700 shadow-lg">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+    </div>
+    <div>
+        <h1 class="text-xl font-semibold text-purple-700">Hall Manager</h1>
                                 <p class="text-xs text-gray-500">College Management System</p>
                             </div>
                         </div>

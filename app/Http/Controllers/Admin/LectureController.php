@@ -236,4 +236,55 @@ class LectureController extends Controller
             'message' => 'Lecture deleted successfully!'
         ]);
     }
+
+    /**
+     * Show attendance for a specific lecture.
+     */
+    public function showAttendance($id)
+    {
+        $lecture = Lecture::with(['hall', 'user'])->findOrFail($id);
+        $attendances = \App\Models\LectureAttendance::with(['student.user'])
+            ->where('lecture_id', $id)
+            ->get();
+
+        return view('admin.lecture-attendance', compact('lecture', 'attendances'));
+    }
+
+    /**
+     * Export attendance data as CSV.
+     */
+    public function exportAttendance($id)
+    {
+        $lecture = Lecture::findOrFail($id);
+        $attendances = \App\Models\LectureAttendance::with(['student.user'])
+            ->where('lecture_id', $id)
+            ->get();
+
+        $filename = 'lecture_attendance_' . $lecture->id . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($attendances) {
+            $file = fopen('php://output', 'w');
+
+            // CSV headers
+            fputcsv($file, ['Student Name', 'Status', 'Scanned At']);
+
+            // CSV data
+            foreach ($attendances as $attendance) {
+                fputcsv($file, [
+                    $attendance->student->user->name,
+                    ucfirst($attendance->status),
+                    $attendance->scanned_at ? $attendance->scanned_at->format('Y-m-d H:i:s') : 'N/A'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
