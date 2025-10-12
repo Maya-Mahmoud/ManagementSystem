@@ -564,7 +564,7 @@
             }
 
             closeDeleteModal.addEventListener('click', hideDeleteModal);
-            cancelDeleteBtn.addEventListener('click', confirmDelete);
+            cancelDeleteBtn.addEventListener('click', hideDeleteModal);
             confirmDeleteBtn.addEventListener('click', confirmDelete);
 
             deleteModal.addEventListener('click', function(e) {
