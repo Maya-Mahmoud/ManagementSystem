@@ -69,11 +69,11 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[120px]">
-                            <option>All Roles</option>
-                            <option>Admin</option>
-                            <option>Professor</option>
-                            <option>Student</option>
+                        <select id="roleFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[120px]">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="professor">Professor</option>
+                            <option value="student">Student</option>
                         </select>
                     </div>
                 </div>
@@ -109,196 +109,8 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <!-- System Admin -->
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex items-center justify-center w-10 h-10 bg-purple-500 rounded-full">
-                                        <span class="text-sm font-medium text-white">SA</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">System Admin</div>
-                                        <div class="text-sm text-gray-500">admin@college.edu</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Admin</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Jan 1, 2024
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="editUser(1)" class="text-purple-600 hover:text-purple-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Dr. Smith -->
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex items-center justify-center w-10 h-10 bg-blue-500 rounded-full">
-                                        <span class="text-sm font-medium text-white">DS</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Dr. Smith</div>
-                                        <div class="text-sm text-gray-500">smith@college.edu</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Professor</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Feb 15, 2024
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="editUser(2)" class="text-purple-600 hover:text-purple-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Alice Johnson -->
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full">
-                                        <span class="text-sm font-medium text-white">AJ</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Alice Johnson</div>
-                                        <div class="text-sm text-gray-500">alice@college.edu</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Student</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Sep 1, 2024
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="editUser(3)" class="text-purple-600 hover:text-purple-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Prof. Johnson -->
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex items-center justify-center w-10 h-10 bg-gray-500 rounded-full">
-                                        <span class="text-sm font-medium text-white">PJ</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Prof. Johnson</div>
-                                        <div class="text-sm text-gray-500">johnson@college.edu</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">Professor</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Mar 10, 2024
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="editUser(4)" class="text-purple-600 hover:text-purple-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <!-- Bob Smith -->
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex items-center justify-center w-10 h-10 bg-blue-500 rounded-full">
-                                        <span class="text-sm font-medium text-white">BS</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Bob Smith</div>
-                                        <div class="text-sm text-gray-500">bob@college.edu</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Student</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Sep 5, 2024
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Active</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="editUser(5)" class="text-purple-600 hover:text-purple-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-900">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody class="bg-white divide-y divide-gray-200" id="usersTableBody">
+                        <!-- Users will be loaded dynamically -->
                     </tbody>
                 </table>
             </div>
@@ -502,12 +314,15 @@
             const cancelBtn = document.getElementById('cancelBtn');
             const addUserForm = document.getElementById('addUserForm');
             const searchInput = document.getElementById('searchInput');
+            const roleFilter = document.getElementById('roleFilter');
 
             // Edit modal elements
             const editUserModal = document.getElementById('editUserModal');
             const closeEditModal = document.getElementById('closeEditModal');
             const cancelEditBtn = document.getElementById('cancelEditBtn');
             const editUserForm = document.getElementById('editUserForm');
+
+            let allUsers = [];
 
             // Show modal
             addUserBtn.addEventListener('click', function() {
@@ -575,14 +390,14 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        alert('تم تحديث المستخدم بنجاح!');
+                        alert('user updted successfully!');
                         location.reload();
                     } else {
-                        alert(result.message || 'خطأ في تحديث المستخدم');
+                        alert(result.message || 'user update error');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('خطأ في تحديث المستخدم: ' + error.message);
+                    alert('user update error: ' + error.message);
                 }
             });
 
@@ -619,37 +434,38 @@
             // Load users on page load
             loadUsers();
 
-            // Search functionality
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const rows = document.querySelectorAll('tbody tr');
+            // Filter function
+            function filterUsers() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedRole = roleFilter.value;
 
-                rows.forEach(row => {
-                    const name = row.querySelector('.text-sm.font-medium.text-gray-900').textContent.toLowerCase();
-                    const email = row.querySelector('.text-sm.text-gray-500').textContent.toLowerCase();
-                    const role = row.querySelector('.text-xs.px-2.py-1.rounded-full').textContent.toLowerCase();
-
-                    if (name.includes(searchTerm) || email.includes(searchTerm) || role.includes(searchTerm)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+                const filtered = allUsers.filter(user => {
+                    const matchesSearch = user.name.toLowerCase().includes(searchTerm) || user.email.toLowerCase().includes(searchTerm);
+                    const matchesRole = !selectedRole || user.role === selectedRole;
+                    return matchesSearch && matchesRole;
                 });
-            });
+
+                updateUsersTable(filtered);
+            }
+
+            // Event listeners for filters
+            searchInput.addEventListener('input', filterUsers);
+            roleFilter.addEventListener('change', filterUsers);
 
             async function loadUsers() {
                 try {
                     const response = await fetch('/admin/api/users');
                     const users = await response.json();
 
-                    updateUsersTable(users);
+                    allUsers = users;
+                    filterUsers();
                 } catch (error) {
                     console.error('Error loading users:', error);
                 }
             }
 
             function updateUsersTable(users) {
-                const tbody = document.querySelector('tbody');
+                const tbody = document.getElementById('usersTableBody');
 
                 if (users.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No users found</td></tr>';
