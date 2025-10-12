@@ -104,13 +104,20 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                            <select name="department" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <option value="">Select Department</option>
-                                <option value="communications">Communications</option>
-                                <option value="energy">Energy</option>
-                            </select>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                        <select id="lectureDepartment" name="department" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a department</option>
+                            <option value="communications">Communications</option>
+                            <option value="energy">Energy</option>
+                            <option value="marine">Marine</option>
+                            <option value="design_and_production">Design and Production</option>
+                            <option value="computers">Computers</option>
+                            <option value="medical">Medical</option>
+                            <option value="mechatronics">Mechatronics</option>
+                            <option value="power">Power</option>
+                        </select>
+                    </div>
 
                         <div class="flex justify-end space-x-3">
                             <button type="button" id="cancelAddBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>

@@ -29,6 +29,12 @@
                         </svg>
                         Halls
                     </a>
+                     <a href="{{ route('admin.subjects') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        Subject
+                    </a>
                 </nav>
             </div>
         </div>
@@ -188,13 +194,170 @@
 
     <!-- JavaScript -->
     <script>
+        // --- Make loadHalls a global function so deleteHall can call it ---
+        async function loadHalls() {
+            try {
+                const response = await fetch('/admin/api/halls');
+                const halls = await response.json();
+
+                updateHallsGrid(halls);
+            } catch (error) {
+                console.error('Error loading halls:', error);
+            }
+        }
+
+        // updateHallsGrid also needs to be globally accessible or defined inside the DOMContentLoaded
+        // Since loadHalls is calling it, we'll define it globally too.
+        function updateHallsGrid(halls) {
+            const hallsGrid = document.getElementById('hallsGrid');
+            if (halls.length === 0) {
+                hallsGrid.innerHTML = '<p class="text-center text-gray-500">No halls found. Add your first hall!</p>';
+                return;
+            }
+
+            hallsGrid.innerHTML = halls.map(hall => {
+                const statusColors = {
+                    'available': 'green',
+                    'booked': 'red',
+                    'maintenance': 'yellow'
+                };
+
+                const equipmentList = hall.equipment ? hall.equipment.split(',').map(item => item.trim()) : [];
+
+                // NOTE: The onclick attributes below now correctly call global functions
+                return `
+                    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">${hall.hall_name}</h3>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="window.editHall(${hall.id})" class="text-purple-600 hover:text-purple-900 transition-colors duration-200 transform hover:scale-110">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                </button>
+                                <button onclick="window.deleteHall(${hall.id})" class="text-red-600 hover:text-red-900 transition-colors duration-200 transform hover:scale-110">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                ${hall.building}, Floor ${hall.floor}
+                            </div>
+
+                            <div class="flex items-center text-sm text-gray-600">
+                                <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                Capacity: <span class="font-medium ml-1">${hall.capacity}</span>
+                            </div>
+
+                            <div class="flex items-center text-sm text-gray-600">
+                                <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                                Status: <span class="font-medium ml-1 text-${statusColors[hall.status] || 'gray'}-600 capitalize">${hall.status}</span>
+                            </div>
+                        </div>
+
+                        ${equipmentList.length > 0 ? `
+                            <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-700 mb-2">Equipment:</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${equipmentList.map(item => `<span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">${item}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- FIX: Define deleteHall globally using 'window' so it can be called from onclick attribute ---
+        window.deleteHall = async function(hallId) {
+            if (confirm('Are you sure you want to delete this hall? This action cannot be undone.')) {
+                try {
+                    const response = await fetch(`/admin/api/halls/${hallId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Hall deleted successfully!');
+                        loadHalls(); // Reload halls
+                    } else {
+                        const result = await response.json();
+                        alert(result.message || 'Error deleting hall');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error deleting hall');
+                }
+            }
+        };
+        // -------------------------------------------------------------------------------------------------
+
+
+        window.editHall = async function(hallId) { // هذه الدالة كانت معرفة بالفعل بشكل صحيح
+            console.log('Editing hall with ID:', hallId);
+            try {
+                const response = await fetch(`/admin/api/halls/${hallId}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const hall = await response.json();
+                console.log('Hall data:', hall);
+
+                if (!hall || !hall.id) {
+                    throw new Error('Invalid or empty hall data');
+                }
+
+                // Populate form with fallback values
+                document.getElementById('editHallId').value = hall.id || '';
+                document.getElementById('editHallName').value = hall.hall_name || '';
+                document.getElementById('editHallCapacity').value = hall.capacity || '';
+                document.getElementById('editHallBuilding').value = hall.building || '';
+                document.getElementById('editHallFloor').value = hall.floor || '';
+                document.getElementById('editHallStatus').value = hall.status || 'available';
+                document.getElementById('editHallEquipment').value = hall.equipment || '';
+
+                // Show modal
+                const editHallModal = document.getElementById('editHallModal');
+                if (!editHallModal) {
+                    throw new Error('Edit modal element not found');
+                }
+                console.log('Showing edit modal');
+                editHallModal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error in editHall:', error);
+                alert('Failed to load hall data: ' + error.message);
+            }
+        };
+
+        // --- DOMContentLoaded for initial setup and modal handlers ---
         document.addEventListener('DOMContentLoaded', function() {
             const addHallBtn = document.getElementById('addHallBtn');
             const addHallModal = document.getElementById('addHallModal');
             const closeModal = document.getElementById('closeModal');
             const cancelBtn = document.getElementById('cancelBtn');
             const addHallForm = document.getElementById('addHallForm');
-            const hallsGrid = document.getElementById('hallsGrid');
 
             // Show modal
             addHallBtn.addEventListener('click', function() {
@@ -217,7 +380,7 @@
                 }
             });
 
-            // Handle form submission
+            // Handle Add Hall form submission
             addHallForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
@@ -249,157 +412,9 @@
                 }
             });
 
-            // Load halls on page load
+            // Load halls on page load (now that loadHalls is globally defined)
             loadHalls();
 
-            async function loadHalls() {
-                try {
-                    const response = await fetch('/admin/api/halls');
-                    const halls = await response.json();
-
-                    updateHallsGrid(halls);
-                } catch (error) {
-                    console.error('Error loading halls:', error);
-                }
-            }
-
-            function updateHallsGrid(halls) {
-                if (halls.length === 0) {
-                    hallsGrid.innerHTML = '<p class="text-center text-gray-500">No halls found. Add your first hall!</p>';
-                    return;
-                }
-
-                hallsGrid.innerHTML = halls.map(hall => {
-                    const statusColors = {
-                        'available': 'green',
-                        'booked': 'red',
-                        'maintenance': 'yellow'
-                    };
-
-                    const equipmentList = hall.equipment ? hall.equipment.split(',').map(item => item.trim()) : [];
-
-                    return `
-                        <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-900">${hall.hall_name}</h3>
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="editHall(${hall.id})" class="text-purple-600 hover:text-purple-900 transition-colors duration-200 transform hover:scale-110">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                        </svg>
-                                    </button>
-                                    <button onclick="deleteHall(${hall.id})" class="text-red-600 hover:text-red-900 transition-colors duration-200 transform hover:scale-110">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="space-y-3 mb-4">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    ${hall.building}, Floor ${hall.floor}
-                                </div>
-
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                    </svg>
-                                    Capacity: <span class="font-medium ml-1">${hall.capacity}</span>
-                                </div>
-
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                    </svg>
-                                    Status: <span class="font-medium ml-1 text-${statusColors[hall.status] || 'gray'}-600 capitalize">${hall.status}</span>
-                                </div>
-                            </div>
-
-                            ${equipmentList.length > 0 ? `
-                                <div class="mb-4">
-                                    <p class="text-sm font-medium text-gray-700 mb-2">Equipment:</p>
-                                    <div class="flex flex-wrap gap-2">
-                                        ${equipmentList.map(item => `<span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">${item}</span>`).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            async function deleteHall(hallId) {
-                if (confirm('Are you sure you want to delete this hall?')) {
-                    try {
-                        const response = await fetch(`/admin/api/halls/${hallId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            }
-                        });
-
-                        if (response.ok) {
-                            alert('Hall deleted successfully!');
-                            loadHalls(); // Reload halls
-                        } else {
-                            const result = await response.json();
-                            alert(result.message || 'Error deleting hall');
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error deleting hall');
-                    }
-                }
-            }
-
-            window.editHall = async function(hallId) { // تعريف الدالة على مستوى النافذة لضمان الوصول
-                console.log('Editing hall with ID:', hallId);
-                try {
-                    const response = await fetch(`/admin/api/halls/${hallId}`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    });
-                    console.log('Response status:', response.status);
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-
-                    const hall = await response.json();
-                    console.log('Hall data:', hall);
-
-                    if (!hall || !hall.id) {
-                        throw new Error('Invalid or empty hall data');
-                    }
-
-                    // Populate form with fallback values
-                    document.getElementById('editHallId').value = hall.id || '';
-                    document.getElementById('editHallName').value = hall.hall_name || '';
-                    document.getElementById('editHallCapacity').value = hall.capacity || '';
-                    document.getElementById('editHallBuilding').value = hall.building || '';
-                    document.getElementById('editHallFloor').value = hall.floor || '';
-                    document.getElementById('editHallStatus').value = hall.status || 'available';
-                    document.getElementById('editHallEquipment').value = hall.equipment || '';
-
-                    // Show modal
-                    const editHallModal = document.getElementById('editHallModal');
-                    if (!editHallModal) {
-                        throw new Error('Edit modal element not found');
-                    }
-                    console.log('Showing edit modal');
-                    editHallModal.classList.remove('hidden');
-                } catch (error) {
-                    console.error('Error in editHall:', error);
-                    alert('Failed to load hall data: ' + error.message);
-                }
-            };
 
             // Edit modal handlers
             const editHallModal = document.getElementById('editHallModal');
