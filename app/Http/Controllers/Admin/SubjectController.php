@@ -50,4 +50,33 @@ class SubjectController extends Controller
 
         return redirect()->route('admin.subjects')->with('success', 'Subject added successfully.');
     }
+
+    public function update(Request $request, Subject $subject)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'semester' => 'required|in:first,second',
+            'year' => 'required|in:first,second,third,fourth,fifth',
+            'department_id' => 'required|exists:departments,id',
+        ]);
+
+        $department = \App\Models\Department::find($request->department_id);
+
+        $subject->update([
+            'name' => $request->name,
+            'semester' => $request->semester,
+            'year' => $request->year,
+            'department_id' => $request->department_id,
+            'department' => $department->name,
+        ]);
+
+        return redirect()->route('admin.subjects')->with('success', 'Subject updated successfully.');
+    }
+
+    public function destroy(Subject $subject)
+    {
+        $subject->delete();
+
+        return redirect()->route('admin.subjects')->with('success', 'Subject deleted successfully.');
+    }
 }

@@ -66,6 +66,8 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     })->name('halls');
     Route::get('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'index'])->name('subjects');
     Route::post('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'store'])->name('subjects.store');
+    Route::put('subjects/{subject}', [App\Http\Controllers\Admin\SubjectController::class, 'update'])->name('subjects.update');
+    Route::delete('subjects/{subject}', [App\Http\Controllers\Admin\SubjectController::class, 'destroy'])->name('subjects.destroy');
     Route::view('professors', 'admin.professors')->name('professors');
     Route::get('dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/', function () {
