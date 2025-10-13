@@ -85,18 +85,6 @@
                             @endforeach
                         </select>
                     </div>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Hall</label>
-                        <select id="lectureHall" name="hall_id" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="">Select a hall</option>
-                            @foreach($halls as $hall)
-                                <option value="{{ $hall->id }}">{{ $hall->hall_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
                         <input type="datetime-local" id="lectureStartTime" name="start_time" required
@@ -108,6 +96,17 @@
                         <input type="datetime-local" id="lectureEndTime" name="end_time" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hall</label>
+                        <select id="lectureHall" name="hall_id" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select a hall</option>
+                            <!-- Halls will be loaded dynamically based on selected time -->
+                        </select>
+                    </div>
+
+                    
 
                     <div class="flex justify-end space-x-3">
                         <button type="button" id="cancelAddBtn"
@@ -304,6 +303,43 @@
                     hideAddModal();
                 }
             });
+
+            // Function to load available halls based on selected time
+            async function loadAvailableHalls() {
+                const startTime = document.getElementById('lectureStartTime').value;
+                const endTime = document.getElementById('lectureEndTime').value;
+                const hallSelect = document.getElementById('lectureHall');
+
+                if (!startTime || !endTime) {
+                    hallSelect.innerHTML = '<option value="">Select a hall</option>';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${apiBaseUrl}/available-halls?start_time=${encodeURIComponent(startTime)}&end_time=${encodeURIComponent(endTime)}`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+
+                    const halls = await response.json();
+                    hallSelect.innerHTML = '<option value="">Select a hall</option>';
+
+                    halls.forEach(hall => {
+                        const option = document.createElement('option');
+                        option.value = hall.id;
+                        option.textContent = hall.hall_name;
+                        hallSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading available halls:', error);
+                }
+            }
+
+            // Add event listeners for time inputs
+            document.getElementById('lectureStartTime').addEventListener('change', loadAvailableHalls);
+            document.getElementById('lectureEndTime').addEventListener('change', loadAvailableHalls);
 
             // معالجة إرسال النموذج
             addLectureForm.addEventListener('submit', async function(e) {

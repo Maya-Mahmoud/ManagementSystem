@@ -88,6 +88,7 @@ Route::middleware([AdminOrProfessorMiddleware::class])
         // 🚨 التعديل الرئيسي: API لـ halls وlectures تم وضعه هنا ليكون متاحاً للمدير والبروفيسور
         Route::prefix('api')->name('api.')->group(function () {
             Route::get('lectures', [LectureController::class, 'index'])->name('api.lectures');
+            Route::get('available-halls', [LectureController::class, 'getAvailableHalls'])->name('available-halls');
             Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class);
             Route::apiResource('lectures', LectureController::class); // إضافة هذا لدعم POST وCRUD الكامل
             Route::apiResource('users', \App\Http\Controllers\Admin\UsersController::class);

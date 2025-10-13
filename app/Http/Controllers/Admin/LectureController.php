@@ -34,6 +34,35 @@ class LectureController extends Controller
         return view('admin.lecture-management', compact('halls', 'subjects', 'departments'));
     }
 
+    public function getAvailableHalls(Request $request)
+    {
+        $startTime = $request->query('start_time');
+        $endTime = $request->query('end_time');
+
+        if (!$startTime || !$endTime) {
+            return response()->json(['error' => 'Start time and end time are required'], 400);
+        }
+
+        $start = \Carbon\Carbon::parse($startTime);
+        $end = \Carbon\Carbon::parse($endTime);
+
+        // Get halls that are not occupied during the requested time
+        $occupiedHallIds = Hall::whereHas('lectures', function ($query) use ($start, $end) {
+            $query->where(function ($q) use ($start, $end) {
+                $q->where('start_time', '<', $end)
+                  ->where('end_time', '>', $start);
+            });
+        })->orWhereHas('bookings', function ($query) use ($start, $end) {
+            $query->where('status', 'booked')
+                  ->where('booked_at', '<', $end)
+                  ->where('end_time', '>', $start);
+        })->pluck('id');
+
+        $availableHalls = Hall::whereNotIn('id', $occupiedHallIds)->get(['id', 'hall_name']);
+
+        return response()->json($availableHalls);
+    }
+
     public function advancedScheduler()
     {
         $halls = Hall::all();
