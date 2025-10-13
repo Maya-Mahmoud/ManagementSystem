@@ -58,7 +58,8 @@ Route::middleware([
 // مسارات واجهة المدير (Admin Panel Routes) - محمية بـ AdminMiddleware
 Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('users', function () {
-        return view('admin.users');
+        $departments = \App\Models\Department::all();
+        return view('admin.users', compact('departments'));
     })->name('users');
     Route::get('classrooms', Classrooms::class)->name('classrooms');
     Route::get('halls', function () {

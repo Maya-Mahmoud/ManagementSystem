@@ -26,6 +26,8 @@ class UsersController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,professor,student',
+            'year' => 'nullable|required_if:role,student|in:first,second,third,fourth,fifth',
+            'department_id' => 'nullable|required_if:role,student|exists:departments,id',
         ]);
 
         $user = User::create([
@@ -34,7 +36,17 @@ class UsersController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'status' => 'active',
+            'department_id' => $request->role === 'student' ? $request->department_id : null,
         ]);
+
+        if ($request->role === 'student') {
+            \App\Models\Student::create([
+                'user_id' => $user->id,
+                'department_id' => $request->department_id,
+                'year' => $request->year,
+                'attendance_count' => 0,
+            ]);
+        }
 
         return response()->json([
             'message' => 'User created successfully',

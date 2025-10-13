@@ -155,6 +155,30 @@
                         </select>
                     </div>
 
+                    <div class="mb-4 student-fields" id="studentYearField" style="display: none;">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                        <select id="userYear" name="year"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select Year</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                            <option value="third">Third</option>
+                            <option value="fourth">Fourth</option>
+                            <option value="fifth">Fifth</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4 student-fields" id="studentDepartmentField" style="display: none;">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                        <select id="userDepartment" name="department_id"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="">Select Department</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <input type="password" id="userPassword" name="password" required
@@ -327,12 +351,20 @@
             // Show modal
             addUserBtn.addEventListener('click', function() {
                 addUserModal.classList.remove('hidden');
+                // Reset form and hide student fields
+                addUserForm.reset();
+                document.querySelectorAll('.student-fields').forEach(field => {
+                    field.style.display = 'none';
+                });
             });
 
             // Hide modal
             function hideModal() {
                 addUserModal.classList.add('hidden');
                 addUserForm.reset();
+                document.querySelectorAll('.student-fields').forEach(field => {
+                    field.style.display = 'none';
+                });
             }
 
             closeModal.addEventListener('click', hideModal);
@@ -408,12 +440,19 @@
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData.entries());
 
+                // Remove student-specific fields if role is not student
+                if (data.role !== 'student') {
+                    delete data.year;
+                    delete data.department_id;
+                }
+
                 try {
                     const response = await fetch('/admin/api/users', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify(data)
                     });
@@ -451,6 +490,21 @@
             // Event listeners for filters
             searchInput.addEventListener('input', filterUsers);
             roleFilter.addEventListener('change', filterUsers);
+
+            // Show/hide student fields based on role selection
+            userRole.addEventListener('change', function() {
+                const selectedRole = this.value;
+                const studentFields = document.querySelectorAll('.student-fields');
+                if (selectedRole === 'student') {
+                    studentFields.forEach(field => {
+                        field.style.display = 'block';
+                    });
+                } else {
+                    studentFields.forEach(field => {
+                        field.style.display = 'none';
+                    });
+                }
+            });
 
             async function loadUsers() {
                 try {
