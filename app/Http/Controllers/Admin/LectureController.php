@@ -217,11 +217,16 @@ public function showAttendance($id)
     public function destroy(string $id)
     {
         $lecture = Lecture::findOrFail($id);
+
+        // Delete associated attendance records first
+        $lecture->attendances()->delete();
+
+        // Then delete the lecture
         $lecture->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Lecture deleted successfully!'
+            'message' => 'Lecture and its attendance records deleted successfully!'
         ]);
     }
 

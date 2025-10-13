@@ -49,14 +49,9 @@
                         <select id="lectureDepartment" name="department" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">Select a department</option>
-                            <option value="communications">Communications</option>
-                            <option value="energy">Energy</option>
-                            <option value="marine">Marine</option>
-                            <option value="design_and_production">Design and Production</option>
-                            <option value="computers">Computers</option>
-                            <option value="medical">Medical</option>
-                            <option value="mechatronics">Mechatronics</option>
-                            <option value="power">Power</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->name }}">{{ $department->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="mb-4">

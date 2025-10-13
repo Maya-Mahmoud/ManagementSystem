@@ -38,11 +38,14 @@ class SubjectController extends Controller
             'department_id' => 'required|exists:departments,id',
         ]);
 
+        $department = \App\Models\Department::find($request->department_id);
+
         Subject::create([
             'name' => $request->name,
             'semester' => $request->semester,
             'year' => $request->year,
             'department_id' => $request->department_id,
+            'department' => $department->name,
         ]);
 
         return redirect()->route('admin.subjects')->with('success', 'Subject added successfully.');

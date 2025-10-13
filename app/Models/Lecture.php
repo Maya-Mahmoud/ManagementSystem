@@ -38,8 +38,13 @@ class Lecture extends Model
         return $this->belongsTo(Department::class);
     }
 
-     public function subject()
+    public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(LectureAttendance::class);
     }
 }

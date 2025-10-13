@@ -14,6 +14,7 @@ class Subject extends Model
         'semester',
         'year',
         'department_id',
+        'department',
     ];
 
     public function department()
