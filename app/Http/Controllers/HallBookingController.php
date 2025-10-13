@@ -18,10 +18,21 @@ class HallBookingController extends Controller
     public function book(Request $request, Hall $hall)
     {
         if ($hall->status === 'available' && Auth::check()) {
+            // Check for overlapping lectures
+            $now = now();
+            $overlappingLectures = $hall->lectures()
+                ->where('start_time', '<=', $now)
+                ->where('end_time', '>', $now)
+                ->exists();
+
+            if ($overlappingLectures) {
+                return redirect()->route('halls.index')->with('error', 'Cannot book this hall as it has an ongoing lecture.');
+            }
+
             Booking::create([
                 'user_id' => Auth::id(),
                 'hall_id' => $hall->id,
-                'booked_at' => now(),
+                'booked_at' => $now,
                 'status' => 'booked',
             ]);
 
@@ -39,7 +50,8 @@ class HallBookingController extends Controller
             $booking = $hall->currentBooking;
             if ($booking && $booking->user_id === Auth::id()) {
                 $booking->update(['status' => 'cancelled']);
-                $hall->update(['status' => 'available']);
+                // Recompute status based on lectures instead of directly setting to available
+                $hall->updateStatusBasedOnLectures();
 
                 return redirect()->route('halls.index')->with('success', 'Hall released successfully!');
             }

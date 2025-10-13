@@ -49,4 +49,19 @@ class Lecture extends Model
     return $this->hasMany(StudentSubjectAttendance::class, 'lecture_id');
 }
 
+    /**
+     * Check if this lecture overlaps with another lecture or booking.
+     */
+    public function overlapsWith($other)
+    {
+        if ($other instanceof Lecture) {
+            return $this->start_time < $other->end_time && $this->end_time > $other->start_time;
+        } elseif ($other instanceof \App\Models\Booking) {
+            // Assuming Booking has end_time; if not, treat as point-in-time
+            $bookingEnd = $other->end_time ?? $other->booked_at;
+            return $this->start_time < $bookingEnd && $this->end_time > $other->booked_at;
+        }
+        return false;
+    }
+
 }

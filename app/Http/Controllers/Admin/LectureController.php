@@ -56,6 +56,30 @@ class LectureController extends Controller
                 'end_date' => 'nullable|date|after:start_time',
             ]);
 
+            // Check for overlapping lectures or bookings in the selected hall
+            $hall = Hall::find($validated['hall_id']);
+            if (!$hall) {
+                return response()->json(['success' => false, 'message' => 'Hall not found.'], 404);
+            }
+
+            $overlappingLectures = $hall->lectures()
+                ->where(function ($query) use ($validated) {
+                    $query->where('start_time', '<', $validated['end_time'])
+                          ->where('end_time', '>', $validated['start_time']);
+                })
+                ->exists();
+
+            $overlappingBookings = $hall->bookings()
+                ->where('status', 'booked')
+                ->whereNotNull('end_time')
+                ->where('booked_at', '<', $validated['end_time'])
+                ->where('end_time', '>', $validated['start_time'])
+                ->exists();
+
+            if ($overlappingLectures || $overlappingBookings) {
+                return response()->json(['success' => false, 'message' => 'The hall is already booked during this time.'], 409);
+            }
+
             Log::info('Lecture creation attempt', ['validated_data' => $validated]);
 
             $departmentMapping = [
@@ -73,7 +97,10 @@ class LectureController extends Controller
             $department = \App\Models\Department::whereRaw('LOWER(name) = LOWER(?)', [$dbDepartmentName])->firstOrFail();
             $validated['department_id'] = $department->id;
 
-            $subject = Subject::whereRaw('LOWER(name) = LOWER(?)', [$validated['subject']])->firstOrFail();
+            $subject = Subject::where('name', $validated['subject'])->first();
+            if (!$subject) {
+                return response()->json(['success' => false, 'message' => 'Subject not found: ' . $validated['subject']], 404);
+            }
             $validated['subject_id'] = $subject->id;
 
             $validated['professor'] = Auth::user()->name;
@@ -128,6 +155,9 @@ class LectureController extends Controller
                 $lecture->save();
             }
 
+            // Update hall status after creating lecture
+            $hall->updateStatusBasedOnLectures();
+
             return response()->json(['success' => true, 'message' => 'Lecture created successfully!', 'data' => $lecture->load(['hall', 'user'])], 201);
         } catch (\Exception $e) {
             Log::error('Error storing lecture: ' . $e->getMessage());
@@ -172,7 +202,7 @@ public function showAttendance($id)
         'subject_name' => $subject ? $subject->name : null,
         'subject_department' => $subject ? $subject->department : null,
         'subject_year' => $subject ? $subject->year : null,
-        'department_id' => $department->id ?? null,
+        'department_id' => $subject ? $subject->department_id : null,
         'totalStudents' => $totalStudents,
         'presentCount' => $presentCount,
         'absentCount' => $absentCount
@@ -218,6 +248,7 @@ public function showAttendance($id)
     public function destroy(string $id)
     {
         $lecture = Lecture::findOrFail($id);
+        $hall = $lecture->hall;
 
         Log::info("Deleting lecture ID: {$id}");
 
@@ -234,6 +265,11 @@ public function showAttendance($id)
         // Then delete the lecture
         $lecture->delete();
         Log::info("Lecture ID: {$id} deleted successfully");
+
+        // Update hall status after deleting lecture
+        if ($hall) {
+            $hall->updateStatusBasedOnLectures();
+        }
 
         return response()->json([
             'success' => true,
