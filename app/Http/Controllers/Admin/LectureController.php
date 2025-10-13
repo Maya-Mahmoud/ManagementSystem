@@ -164,7 +164,7 @@ public function showAttendance($id)
     }
 
     $presentCount = $attendances->where('status', 'present')->count(); // عدد الحاضرين
-    $absentCount = max(0, $totalStudents - $presentCount); // عدد الغائبين (الفرق)
+    $absentCount = $attendances->where('status', 'absent')->count(); // عدد الغائبين (الفرق)
 
     Log::info('Lecture Attendance Debug', [
         'lecture_id' => $id,
