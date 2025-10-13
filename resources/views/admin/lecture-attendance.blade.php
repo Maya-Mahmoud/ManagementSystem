@@ -9,7 +9,7 @@
 
     <div class="flex justify-between items-center">
         <div>
-            <h3 class="text-3xl font-bold text-gray-900"> {{ $lecture->subject }} : {{ $lecture->title }}</h3>
+            <h3 class="text-3xl font-bold text-gray-900"> {{ $lecture->title }}</h3>
             
           
         </div>
@@ -95,35 +95,75 @@
                 <p class="text-sm text-gray-500">
                    {{ $lecture->subject }}
                 </p>
-                <p class="text-sm text-gray-500">
-                    Total Students: {{ $totalStudents }}
-                </p>
             </div>
         </div>
 
+        <div class="flex items-start min-w-1/4">
+            <div class="mr-3 text-green-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-700">
+                    Total Students
+                </p>
+                <p class="text-2xl font-bold text-gray-900">{{ $totalStudents }}</p>
+            </div>
+        </div>
     </div>
 </div>
 
-        <!-- Attendance Statistics -->
-        <div class="bg-white shadow-sm rounded-lg mb-6">
-            <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Attendance Statistics</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="text-sm font-medium text-blue-600">Total Students</h4>
-                        <p class="text-2xl font-bold text-blue-900">{{ $totalStudents }}</p>
-                    </div>
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h4 class="text-sm font-medium text-green-600">Present</h4>
-                        <p class="text-2xl font-bold text-green-900">{{ $presentCount }}</p>
-                    </div>
-                    <div class="bg-red-50 p-4 rounded-lg">
-                        <h4 class="text-sm font-medium text-red-600">Absent</h4>
-                        <p class="text-2xl font-bold text-red-900">{{ $absentCount }}</p>
-                    </div>
+<!-- Attendance Statistics -->
+<div class="bg-white p-4 border border-gray-100 rounded-xl shadow-md mt-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Attendance Statistics</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-green-50 p-4 rounded-lg border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-sm font-medium text-green-600">Present</h4>
+                    <p class="text-2xl font-bold text-green-900">{{ $presentCount }}</p>
+                </div>
+                <div class="text-green-500">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                 </div>
             </div>
         </div>
+
+        <div class="bg-red-50 p-4 rounded-lg border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-sm font-medium text-red-600">Absent</h4>
+                    <p class="text-2xl font-bold text-red-900">{{ $absentCount }}</p>
+                </div>
+                <div class="text-red-500">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-blue-50 p-4 rounded-lg border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="text-sm font-medium text-blue-600">Attendance Rate</h4>
+                    <p class="text-2xl font-bold text-blue-900">{{ $totalStudents > 0 ? round(($presentCount / $totalStudents) * 100, 1) : 0 }}%</p>
+                </div>
+                <div class="text-blue-500">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+    </div>
+</div>
 
         <!-- Attendance List -->
         <div class="bg-white shadow-sm rounded-lg">

@@ -20,12 +20,13 @@ class SubjectController extends Controller
             $query->where('semester', $request->semester);
         }
 
-        if ($request->filled('department')) {
-            $query->where('department', $request->department);
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
-        $subjects = $query->get();
-        return view('admin.subjects', compact('subjects'));
+        $subjects = $query->with('department')->get();
+        $departments = \App\Models\Department::all();
+        return view('admin.subjects', compact('subjects', 'departments'));
     }
 
     public function store(Request $request)
@@ -34,10 +35,15 @@ class SubjectController extends Controller
             'name' => 'required|string|max:255',
             'semester' => 'required|in:first,second',
             'year' => 'required|in:first,second,third,fourth,fifth',
-            'department' => 'required|in:communications,energy,marine,design_and_production,computers,medical,mechatronics,power',
+            'department_id' => 'required|exists:departments,id',
         ]);
 
-        Subject::create($request->all());
+        Subject::create([
+            'name' => $request->name,
+            'semester' => $request->semester,
+            'year' => $request->year,
+            'department_id' => $request->department_id,
+        ]);
 
         return redirect()->route('admin.subjects')->with('success', 'Subject added successfully.');
     }

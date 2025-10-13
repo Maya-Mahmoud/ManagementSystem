@@ -46,16 +46,11 @@
                 <form method="GET" action="{{ route('admin.subjects') }}" class="flex flex-wrap gap-4 items-end">
                     <div class="flex-1 min-w-[200px]">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                        <select name="department" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select name="department_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">All Departments</option>
-                            <option value="communications" {{ request('department') == 'communications' ? 'selected' : '' }}>Communications</option>
-                            <option value="energy" {{ request('department') == 'energy' ? 'selected' : '' }}>Energy</option>
-                            <option value="marine" {{ request('department') == 'marine' ? 'selected' : '' }}>Marine</option>
-                            <option value="design_and_production" {{ request('department') == 'design_and_production' ? 'selected' : '' }}>Design and Production</option>
-                            <option value="computers" {{ request('department') == 'computers' ? 'selected' : '' }}>Computers</option>
-                            <option value="medical" {{ request('department') == 'medical' ? 'selected' : '' }}>Medical</option>
-                            <option value="mechatronics" {{ request('department') == 'mechatronics' ? 'selected' : '' }}>Mechatronics</option>
-                            <option value="power" {{ request('department') == 'power' ? 'selected' : '' }}>Power</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}" {{ request('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="flex-1 min-w-[150px]">
@@ -97,11 +92,15 @@
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($subjects as $subject)
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="text-md font-medium text-gray-900">{{ $subject->name }}</h4>
-                                <p class="text-sm text-gray-600">Year: {{ ucfirst($subject->year) }} | Semester: {{ ucfirst($subject->semester) }} | Department: {{ ucfirst($subject->department) }}</p>
-                                <p class="text-sm text-gray-600">{{ \App\Models\Lecture::where('subject_id', $subject->id)->count() }} lectures</p>
-                            </div>
+                            @if(is_object($subject))
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="text-md font-medium text-gray-900">{{ $subject->name }}</h4>
+                                    <p class="text-sm text-gray-600">Year: {{ ucfirst($subject->year) }} | Semester: {{ ucfirst($subject->semester) }} | Department: {{ is_object($subject->department) ? $subject->department->name : ucfirst($subject->department) }}</p>
+                                    <p class="text-sm text-gray-600">{{ \App\Models\Lecture::where('subject_id', $subject->id)->count() }} lectures</p>
+                                </div>
+                            @else
+                                <p class="text-red-500">Invalid subject data: {{ $subject }}</p>
+                            @endif
                         @endforeach
                     </div>
                 @endif
@@ -150,20 +149,15 @@
                         </div>
 
                         <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                        <select id="lectureDepartment" name="department" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="">Select a department</option>
-                            <option value="communications">Communications</option>
-                            <option value="energy">Energy</option>
-                            <option value="marine">Marine</option>
-                            <option value="design_and_production">Design and Production</option>
-                            <option value="computers">Computers</option>
-                            <option value="medical">Medical</option>
-                            <option value="mechatronics">Mechatronics</option>
-                            <option value="power">Power</option>
-                        </select>
-                    </div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                            <select id="lectureDepartment" name="department_id" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select a department</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
                         <div class="flex justify-end space-x-3">
                             <button type="button" id="cancelAddBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>

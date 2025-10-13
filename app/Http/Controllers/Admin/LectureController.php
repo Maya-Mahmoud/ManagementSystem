@@ -7,11 +7,13 @@ use App\Models\Lecture;
 use App\Models\Hall;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class LectureController extends Controller
 {
@@ -132,39 +134,51 @@ class LectureController extends Controller
         }
     }
 
-    public function showAttendance($id)
-    {
-        $lecture = Lecture::with(['hall', 'user', 'subject'])->findOrFail($id);
-        $attendances = \App\Models\LectureAttendance::with(['student.user'])
-            ->where('lecture_id', $id)
-            ->get();
+public function showAttendance($id)
+{
+    $lecture = Lecture::with(['hall', 'user', 'subject'])->findOrFail($id);
+    $attendances = \App\Models\LectureAttendance::with(['student.user'])
+        ->where('lecture_id', $id)
+        ->get();
 
-        // تحقق إن subject موجود ككائن
-        $subject = $lecture->subject instanceof Subject ? $lecture->subject : null;
-
-        $totalStudents = 0;
-        if ($subject) {
-            $totalStudents = Student::where('department_id', $subject->department_id)
-                ->where('year', $subject->year)
-                ->count();
-        }
-
-        $presentCount = $attendances->where('status', 'present')->count();
-        $absentCount = $totalStudents - $presentCount;
-
-        Log::info('Lecture Attendance Debug', [
-            'lecture_id' => $id,
-            'subject_id' => $subject ? $subject->id : null,
-            'department_id' => $subject ? $subject->department_id : null,
-            'year' => $subject ? $subject->year : null,
-            'totalStudents' => $totalStudents,
-            'presentCount' => $presentCount,
-            'absentCount' => $absentCount
-        ]);
-
-        return view('admin.lecture-attendance', compact('lecture', 'attendances', 'totalStudents', 'presentCount', 'absentCount'));
+    // Load subject separately to ensure it works
+    $subject = null;
+    if ($lecture->subject_id) {
+        $subject = Subject::find($lecture->subject_id);
+    }
+    if (!$subject && $lecture->subject) {
+        // Fallback: find subject by name if subject_id is null
+        $subject = Subject::whereRaw('LOWER(name) = LOWER(?)', [$lecture->subject])->first();
     }
 
+    // Calculate total students based on department and year
+    $totalStudents = 0;
+    if ($subject) {
+        // Get department_id from subject (which has department_id)
+        $departmentId = $subject->department_id;
+        $year = $subject->year;
+
+        $totalStudents = Student::where('department_id', $departmentId)
+            ->where('year', $year)
+            ->count();
+    }
+
+    $presentCount = $attendances->where('status', 'present')->count(); // عدد الحاضرين
+    $absentCount = max(0, $totalStudents - $presentCount); // عدد الغائبين (الفرق)
+
+    Log::info('Lecture Attendance Debug', [
+        'lecture_id' => $id,
+        'subject_name' => $subject ? $subject->name : null,
+        'subject_department' => $subject ? $subject->department : null,
+        'subject_year' => $subject ? $subject->year : null,
+        'department_id' => $department->id ?? null,
+        'totalStudents' => $totalStudents,
+        'presentCount' => $presentCount,
+        'absentCount' => $absentCount
+    ]);
+
+    return view('admin.lecture-attendance', compact('lecture', 'attendances', 'totalStudents', 'presentCount', 'absentCount'));
+}
     public function show(string $id)
     {
         $lecture = Lecture::with(['hall', 'user'])->findOrFail($id);
