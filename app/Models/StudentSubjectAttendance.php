@@ -12,6 +12,7 @@ class StudentSubjectAttendance extends Model
     protected $fillable = [
         'student_id',
         'subject_id',
+        'lecture_id',
         'presence_count',
         'absence_count',
     ];
@@ -30,4 +31,9 @@ class StudentSubjectAttendance extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+    public function lecture()
+{
+    return $this->belongsTo(Lecture::class, 'lecture_id');
+}
+
 }

@@ -35,3 +35,32 @@
    - Run server, simulate actions.
 
 Progress: [ ] 1 [ ] 2 [ ] 3 [ ] 4
+
+## New Task: Ensure Deleted Lectures Do Not Appear in Student Attendance Page
+
+## Current Work
+- User requested that when a lecture is deleted from admin lectures page, all associated attendance records are deleted, so deleted lectures do not appear in student/attendance page.
+
+## Key Technical Concepts
+- Laravel Eloquent: Delete related models via relationships or direct queries.
+- Database foreign keys: lecture_id in student_subject_attendances links aggregates to lectures.
+- Student attendance page: Likely queries StudentSubjectAttendance to show subject-level summaries; deleting linked records prevents display.
+
+## Relevant Files and Code
+- app/Http/Controllers/Admin/LectureController.php: destroy() method already deletes LectureAttendance; needs to also delete StudentSubjectAttendance where lecture_id = $id.
+- app/Models/StudentSubjectAttendance.php: Model for aggregated attendance.
+- app/Models/Lecture.php: Has attendances() relationship to LectureAttendance.
+
+## Problem Solving
+- LectureController::destroy() already handles LectureAttendance deletion.
+- Add StudentSubjectAttendance::where('lecture_id', $id)->delete(); after attendances delete.
+- Import StudentSubjectAttendance in controller.
+
+## Pending Tasks and Next Steps
+1. Import StudentSubjectAttendance in LectureController.php.
+2. Update destroy() method: After $lecture->attendances()->delete(), add StudentSubjectAttendance::where('lecture_id', $id)->delete().
+3. Test: Delete a lecture with attendance, verify no StudentSubjectAttendance records remain for that lecture_id, and student page doesn't show it.
+   - Use tinker to check: Lecture::find($id)->attendances()->count() == 0 and StudentSubjectAttendance::where('lecture_id', $id)->count() == 0 after delete.
+   - If student page uses cache, clear with php artisan cache:clear.
+
+Progress: [ ] 1 [ ] 2 [ ] 3

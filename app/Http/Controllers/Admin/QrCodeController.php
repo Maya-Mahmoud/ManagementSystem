@@ -64,8 +64,8 @@ class QrCodeController extends Controller
                 ]
             );
 
-            // Increment absence_count in student_subject_attendances
-            StudentSubjectAttendance::firstOrCreate(
+            // Handle student_subject_attendance - check if exists for student and subject, update lecture_id if needed
+            $ssa = StudentSubjectAttendance::firstOrCreate(
                 [
                     'student_id' => $studentId,
                     'subject_id' => $lecture->subject_id,
@@ -73,8 +73,16 @@ class QrCodeController extends Controller
                 [
                     'presence_count' => 0,
                     'absence_count' => 0,
+                    'lecture_id' => $lecture->id,
                 ]
-            )->increment('absence_count');
+            );
+
+            if (!$ssa->wasRecentlyCreated) {
+                $ssa->lecture_id = $lecture->id;
+                $ssa->save();
+            }
+
+            $ssa->increment('absence_count');
         }
     }
 

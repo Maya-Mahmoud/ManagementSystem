@@ -8,6 +8,7 @@ use App\Models\Hall;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Department;
+use App\Models\StudentSubjectAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -218,11 +219,21 @@ public function showAttendance($id)
     {
         $lecture = Lecture::findOrFail($id);
 
+        Log::info("Deleting lecture ID: {$id}");
+
         // Delete associated attendance records first
+        $lectureAttendancesCount = $lecture->attendances()->count();
         $lecture->attendances()->delete();
+        Log::info("Deleted {$lectureAttendancesCount} lecture attendance records for lecture ID: {$id}");
+
+        // Delete associated student subject attendance records
+        $studentSubjectAttendancesCount = StudentSubjectAttendance::where('lecture_id', $id)->count();
+        StudentSubjectAttendance::where('lecture_id', $id)->delete();
+        Log::info("Deleted {$studentSubjectAttendancesCount} student subject attendance records for lecture ID: {$id}");
 
         // Then delete the lecture
         $lecture->delete();
+        Log::info("Lecture ID: {$id} deleted successfully");
 
         return response()->json([
             'success' => true,
