@@ -4,6 +4,38 @@
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-gray-900">Halls Booking</h1>
                 <p class="mt-2 text-sm text-gray-600">Book or release halls for your classes</p>
+                <br>
+                  <h3 style="color: #8A2BE2;">Select the start and end time to view the all hall available at this time:</h3>
+                <!-- DateTime Filter Form -->
+                <div class="mt-6 bg-white p-4 rounded-lg shadow-md">
+                    <form method="GET" action="{{ route('halls.index') }}" class="flex flex-wrap items-end gap-4">
+                        <div>
+                            <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                            <input type="datetime-local" name="start_time" id="start_time" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ isset($startTime) ? $startTime : '' }}">
+                        </div>
+
+                        <div>
+                            <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                            <input type="datetime-local" name="end_time" id="end_time" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ isset($endTime) ? $endTime : '' }}">
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-gradient-to-r from-purple-700 to-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity flex items-center" style="transition-duration: 0.2s;">
+    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="mr-2"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12zM7 10h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Search</button>
+                            @if(isset($startTime) || isset($endTime))
+                                <a href="{{ route('halls.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">
+                                   view all
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+
+                    @if(isset($startTime) && isset($endTime))
+                        <p class="mt-2 text-sm text-gray-600">
+                       View available halls{{ \Carbon\Carbon::parse($startTime)->format('d/m/Y H:i') }} to {{ \Carbon\Carbon::parse($endTime)->format('d/m/Y H:i') }}
+                        </p>
+                    @endif
+                </div>
             </div>
 
             @if (session('success'))
@@ -67,9 +99,7 @@
                                     {{ $hall->building }}, Floor {{ $hall->floor }}
                                 </div>
 
-                                <button data-hall-id="{{ $hall->id }}" data-hall-name="{{ $hall->hall_name }}" class="booking-details-btn bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                                    Booking Details
-                                </button>
+                                <button data-hall-id="{{ $hall->id }}" data-hall-name="{{ $hall->hall_name }}" class="booking-details-btn bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-800 transition-colors">Booking Details</button>
 
                                 @if($hall->currentBooking && $hall->currentBooking->user_id === auth()->id())
                                     <form action="{{ route('halls.release', $hall) }}" method="POST" class="inline ml-2">
@@ -102,7 +132,29 @@
                 </div>
 
                 <div id="bookingDetailsContent">
-                    <!-- Booking details will be loaded here -->
+                    <div class="mb-4">
+                        <label for="startTimeSelect" class="block text-sm font-medium text-gray-700 mb-2">Start Time:</label>
+                        <select id="startTimeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select Start Time</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="endTimeSelect" class="block text-sm font-medium text-gray-700 mb-2">End Time:</label>
+                        <select id="endTimeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select End Time</option>
+                        </select>
+                    </div>
+                    <div id="availabilityCheck" class="mb-4 hidden">
+                        <p id="availabilityMessage" class="text-sm"></p>
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button id="checkAvailabilityBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                            Check Availability
+                        </button>
+                        <button id="bookHallBtn" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors hidden">
+                            Book Hall
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
