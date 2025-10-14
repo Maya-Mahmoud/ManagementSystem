@@ -5,7 +5,7 @@
                 <h1 class="text-3xl font-bold text-gray-900">Halls Booking</h1>
                 <p class="mt-2 text-sm text-gray-600">Book or release halls for your classes</p>
                 <br>
-                  <h3 style="color: #8A2BE2;">Select the start and end time to view the all hall available at this time:</h3>
+                <h3 style="color: #8A2BE2;">Select the start and end time to view the all hall available at this time:</h3>
                 <!-- DateTime Filter Form -->
                 <div class="mt-6 bg-white p-4 rounded-lg shadow-md">
                     <form method="GET" action="{{ route('halls.index') }}" class="flex flex-wrap items-end gap-4">
@@ -21,10 +21,11 @@
 
                         <div class="flex gap-2">
                             <button type="submit" class="bg-gradient-to-r from-purple-700 to-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity flex items-center" style="transition-duration: 0.2s;">
-    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="mr-2"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12zM7 10h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Search</button>
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="mr-2"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12zM7 10h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Search
+                            </button>
                             @if(isset($startTime) || isset($endTime))
                                 <a href="{{ route('halls.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">
-                                   view all
+                                    view all
                                 </a>
                             @endif
                         </div>
@@ -32,7 +33,7 @@
 
                     @if(isset($startTime) && isset($endTime))
                         <p class="mt-2 text-sm text-gray-600">
-                       View available halls{{ \Carbon\Carbon::parse($startTime)->format('d/m/Y H:i') }} to {{ \Carbon\Carbon::parse($endTime)->format('d/m/Y H:i') }}
+                            View available halls {{ \Carbon\Carbon::parse($startTime)->format('d/m/Y H:i') }} to {{ \Carbon\Carbon::parse($endTime)->format('d/m/Y H:i') }}
                         </p>
                     @endif
                 </div>
@@ -56,7 +57,7 @@
                         $currentLecture = $hall->lectures()->where('start_time', '<=', now())->where('end_time', '>', now())->first();
                         $currentBooking = $hall->currentBooking;
                     @endphp
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-purple-300">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $hall->hall_name }}</h3>
 
@@ -99,7 +100,12 @@
                                     {{ $hall->building }}, Floor {{ $hall->floor }}
                                 </div>
 
-                                <button data-hall-id="{{ $hall->id }}" data-hall-name="{{ $hall->hall_name }}" class="booking-details-btn bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-800 transition-colors">Booking Details</button>
+                                <button data-hall-id="{{ $hall->id }}" data-hall-name="{{ $hall->hall_name }}" class="booking-details-btn bg-gradient-to-r from-purple-700 to-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity flex items-center border border-purple-300">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="mr-2">
+                                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12zM7 10h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+                                    </svg>
+                                    Booking Details
+                                </button>
 
                                 @if($hall->currentBooking && $hall->currentBooking->user_id === auth()->id())
                                     <form action="{{ route('halls.release', $hall) }}" method="POST" class="inline ml-2">
@@ -200,36 +206,38 @@
                         let html = '<div class="space-y-4">';
                         data.data.forEach(lecture => {
                             html += `
-                                <div class="border-b border-gray-200 pb-4 last:border-b-0">
-                                    <div class="mb-2">
-                                        <label class="block text-sm font-medium text-gray-700">Lecture Title:</label>
-                                        <p class="text-sm text-gray-900">${lecture.title || 'N/A'}</p>
+                                <div class="bg-white border border-purple-300 rounded-lg p-4 shadow-sm">
+                                    <div class="mb-3">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Lecture Title:</label>
+                                        <p class="text-sm font-semibold text-gray-900">${lecture.title || 'N/A'}</p>
                                     </div>
-                                    <div class="mb-2">
-                                        <label class="block text-sm font-medium text-gray-700">Subject:</label>
-                                        <p class="text-sm text-gray-900">${lecture.subject || 'N/A'}</p>
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="block text-sm font-medium text-gray-700">Professor:</label>
-                                        <p class="text-sm text-gray-900">${lecture.professor || 'N/A'}</p>
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="block text-sm font-medium text-gray-700">Start Time:</label>
-                                        <p class="text-sm text-gray-900">${lecture.start_time ? new Date(lecture.start_time).toLocaleString('en-GB') : 'N/A'}</p>
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="block text-sm font-medium text-gray-700">End Time:</label>
-                                        <p class="text-sm text-gray-900">${lecture.end_time ? new Date(lecture.end_time).toLocaleString('en-GB') : 'N/A'}</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Status:</label>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                            lecture.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                                            lecture.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                                            'bg-gray-100 text-gray-800'
-                                        }">
-                                            ${lecture.status ? lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1) : 'Unknown'}
-                                        </span>
+                                    <div class="grid grid-cols-1 gap-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Subject:</span>
+                                            <span class="font-medium text-gray-900">${lecture.subject || 'N/A'}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Professor:</span>
+                                            <span class="font-medium text-gray-900">${lecture.professor || 'N/A'}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Start Time:</span>
+                                            <span class="font-medium text-gray-900">${lecture.start_time ? new Date(lecture.start_time).toLocaleString('en-GB') : 'N/A'}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">End Time:</span>
+                                            <span class="font-medium text-gray-900">${lecture.end_time ? new Date(lecture.end_time).toLocaleString('en-GB') : 'N/A'}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                                            <span class="text-gray-600">Status:</span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                lecture.status === 'ongoing' ? 'bg-green-100 text-green-800' :
+                                                lecture.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            }">
+                                                ${lecture.status ? lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1) : 'Unknown'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             `;

@@ -10,13 +10,13 @@
                 <select id="lectureSelect" class="w-full border border-gray-300 rounded-md p-2 mb-4">
                     <option value="">Select a lecture</option>
                 </select>
-                <button id="generateQrBtn" class="w-full bg-gradient-to-r from-purple-400 to-blue-500 text-white py-2 rounded-md disabled:opacity-50" disabled>
-                    <svg class="inline w-5 h-5 mr-2 animate-spin hidden" id="loadingSpinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg>
-                    Generate QR Code
-                </button>
+                <button id="generateQrBtn" class="w-full bg-gradient-to-r from-purple-500 to-blue-600 text-white py-2 rounded-md disabled:opacity-50" disabled>
+    <svg class="inline w-5 h-5 mr-2 animate-spin hidden" id="loadingSpinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+    Generate QR Code
+</button>
                 <div id="lectureInfo" class="mt-4 p-3 bg-blue-50 rounded hidden">
                     <p><strong id="infoTitle"></strong></p>
                     <p>Professor: <span id="infoProfessor"></span></p>
@@ -27,7 +27,7 @@
             <!-- QR Code display -->
             <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center justify-center">
                 <h2 class="font-semibold mb-4">Attendance QR Code</h2>
-                <div id="qrCodeContainer" class="border border-gray-300 rounded p-4 w-64 h-64 flex items-center justify-center text-gray-400">
+                <div id="qrCodeContainer" class="border border-gray-300 rounded p-4 w-80 h-80 flex items-center justify-center text-gray-400">
                     Select a lecture and generate QR code
                 </div>
             </div>
