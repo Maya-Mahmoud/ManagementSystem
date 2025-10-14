@@ -23,6 +23,11 @@ class Lecture extends Model
         'subject_id',
     ];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
     public function hall()
     {
         return $this->belongsTo(Hall::class);

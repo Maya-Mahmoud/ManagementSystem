@@ -63,6 +63,50 @@ class LectureController extends Controller
         return response()->json($availableHalls);
     }
 
+    public function getLecturesByHall(Request $request, $hallId)
+    {
+        try {
+            $hall = Hall::findOrFail($hallId);
+            $lectures = $hall->lectures()
+                ->with(['user', 'subject'])
+                ->orderBy('start_time', 'asc')
+                ->get()
+                ->map(function ($lecture) {
+                    $startTime = $lecture->start_time;
+                    $endTime = $lecture->end_time;
+                    $status = 'completed'; // default
+                    if ($startTime && $endTime) {
+                        if ($startTime->isPast() && $endTime->isFuture()) {
+                            $status = 'ongoing';
+                        } elseif ($startTime->isFuture()) {
+                            $status = 'upcoming';
+                        }
+                    }
+
+                    return [
+                        'id' => $lecture->id,
+                        'title' => $lecture->title,
+                        'subject' => $lecture->subject ?? 'N/A',
+                        'professor' => $lecture->user ? $lecture->user->name : ($lecture->professor ?? 'N/A'),
+                        'start_time' => $startTime ? $startTime->format('Y-m-d H:i') : null,
+                        'end_time' => $endTime ? $endTime->format('Y-m-d H:i') : null,
+                        'status' => $status,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data' => $lectures
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching lectures for hall: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch lectures'
+            ], 500);
+        }
+    }
+
     public function advancedScheduler()
     {
         $halls = Hall::all();
@@ -305,6 +349,8 @@ public function showAttendance($id)
             'message' => 'Lecture and its attendance records deleted successfully!'
         ]);
     }
+
+
 
     public function exportAttendance($id)
     {

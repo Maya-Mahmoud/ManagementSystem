@@ -16,3 +16,4 @@ Implement automatic hall status updates: 'booked' when a lecture starts, 'availa
 - [x] Create migration: Add `end_time` to bookings if keeping manual bookings with duration
 - [x] Test: Run migrations, schedule, and verify status changes
 - [x] Edge cases: Handle ongoing lectures at startup, multiple lectures per hall
+- [x] Fix modal: Update JavaScript to use data attributes and add CSRF token; fix route middleware

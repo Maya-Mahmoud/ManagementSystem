@@ -53,6 +53,7 @@ Route::middleware([
     Route::get('/halls', [\App\Http\Controllers\HallBookingController::class, 'index'])->name('halls.index');
     Route::post('/halls/{hall}/book', [\App\Http\Controllers\HallBookingController::class, 'book'])->name('halls.book');
     Route::post('/halls/{hall}/release', [\App\Http\Controllers\HallBookingController::class, 'release'])->name('halls.release');
+    Route::get('/api/halls/{hallId}/lectures', [\App\Http\Controllers\Admin\LectureController::class, 'getLecturesByHall'])->middleware(['auth', 'adminOrProfessor']);
 });
 
 // مسارات واجهة المدير (Admin Panel Routes) - محمية بـ AdminMiddleware
@@ -89,6 +90,7 @@ Route::middleware([AdminOrProfessorMiddleware::class])
         Route::prefix('api')->name('api.')->group(function () {
             Route::get('lectures', [LectureController::class, 'index'])->name('api.lectures');
             Route::get('available-halls', [LectureController::class, 'getAvailableHalls'])->name('available-halls');
+            Route::get('halls/{hallId}/lectures', [LectureController::class, 'getLecturesByHall'])->name('halls.lectures');
             Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class);
             Route::apiResource('lectures', LectureController::class); // إضافة هذا لدعم POST وCRUD الكامل
             Route::apiResource('users', \App\Http\Controllers\Admin\UsersController::class);

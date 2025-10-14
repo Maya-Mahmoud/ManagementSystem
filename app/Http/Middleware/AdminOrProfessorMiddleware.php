@@ -5,23 +5,27 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class AdminOrProfessorMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'professor')) {
-            return $next($request);
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        abort(403, 'Unauthorized action.');
+        $user = Auth::user();
+        if ($user->role !== 'admin' && $user->role !== 'professor') {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        return $next($request);
     }
 }
