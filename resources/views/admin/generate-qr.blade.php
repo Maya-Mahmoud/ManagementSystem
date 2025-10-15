@@ -58,7 +58,8 @@
                     lectures.forEach(lecture => {
                         const option = document.createElement('option');
                         option.value = lecture.id;
-                        option.textContent = `${lecture.title} - ${lecture.hall.hall_name}`;
+                        option.textContent = `${lecture.subject ? lecture.subject.name : 'N/A'} - ${lecture.title} - ${lecture.hall.hall_name}`;
+                        option.dataset.subject = lecture.subject ? lecture.subject.name : 'N/A';
                         option.dataset.professor = lecture.user.name;
                         option.dataset.hall = lecture.hall.hall_name;
                         lectureSelect.appendChild(option);

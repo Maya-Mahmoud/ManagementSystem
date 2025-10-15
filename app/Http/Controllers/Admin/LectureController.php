@@ -21,7 +21,7 @@ class LectureController extends Controller
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $query = Lecture::with(['hall', 'user']);
+            $query = Lecture::with(['hall', 'user', 'subject']);
             if (Auth::user()->role === 'professor') {
                 $query->where('user_id', Auth::id());
             }
