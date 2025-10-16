@@ -24,7 +24,7 @@
                     <div class="flex justify-between items-center h-16">
                         <!-- Logo -->
                        <div class="flex items-center">
-    <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3 
+    <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3
                 bg-gradient-to-br from-indigo-500 to-purple-700 shadow-lg">
         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -84,7 +84,7 @@
                                 </svg>
                                 Book Halls
                             </a>
-                            
+
                             @can('lectures')
                             <a href="{{ route('admin.lectures') }}" class="flex items-center px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.lectures') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
                                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@
                                 Lectures
                             </a>
                             @endif
-                            
+
                             <a href="{{ route('admin.generate-qr') }}" class="flex items-center px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.generate-qr') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
                                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2m0-11h2m-6 0H8m0 0H6m2 0v11a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v11"></path>
@@ -114,7 +114,7 @@
                                 </svg>
                                 Advanced Scheduler
                             </a>
-                            <a href="{{ route('admin.performance') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            <a href="{{ route('admin.performance') }}" class="flex items-center px-3 py-2 text-sm font-medium {{ request()->routeIs('admin.performance') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
                                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>

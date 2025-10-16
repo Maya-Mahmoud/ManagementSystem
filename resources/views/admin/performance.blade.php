@@ -65,7 +65,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">Total Students</h3>
-                        <p id="totalStudents" class="text-2xl font-bold text-blue-600">{{ $stats['total_students'] }}</p>
+                        <p id="totalStudents" class="text-2xl font-bold text-blue-600">0</p>
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">Average Attendance</h3>
-                        <p id="averageAttendance" class="text-2xl font-bold text-green-600">{{ $stats['average_attendance'] }}%</p>
+                        <p id="averageAttendance" class="text-2xl font-bold text-green-600">0%</p>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="ml-4">
                         <h3 class="text-lg font-medium text-gray-900">Average Absence</h3>
-                        <p id="averageAbsence" class="text-2xl font-bold text-red-600">{{ $stats['average_absence'] }}%</p>
+                        <p id="averageAbsence" class="text-2xl font-bold text-red-600">0%</p>
                     </div>
                 </div>
             </div>
@@ -129,6 +129,10 @@
                 });
             });
 
+            subjectSelect.addEventListener('change', function() {
+                loadSubjectStats();
+            });
+
             filterBtn.addEventListener('click', function() {
                 loadPerformanceData();
             });
@@ -139,12 +143,11 @@
                 departmentSelect.value = '';
                 subjectSelect.innerHTML = '<option value="">All Subjects</option>';
                 performanceData.innerHTML = '<p class="text-gray-600">Select filters to view performance data.</p>';
-                // Reload stats
-                loadStats();
+                // Reset stats to 0
+                totalStudents.textContent = '0';
+                averageAttendance.textContent = '0%';
+                averageAbsence.textContent = '0%';
             });
-
-            // Load initial stats
-            loadStats();
 
             function loadSubjects() {
                 const year = yearSelect.value;
@@ -198,11 +201,39 @@
                 .then(response => response.json())
                 .then(data => {
                     totalStudents.textContent = data.total_students;
+                    averageAttendance.textContent = '0%';
+                    averageAbsence.textContent = '0%';
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                });
+            }
+
+            function loadSubjectStats() {
+                const subjectId = subjectSelect.value;
+
+                if (!subjectId) {
+                    averageAttendance.textContent = '0%';
+                    averageAbsence.textContent = '0%';
+                    return;
+                }
+
+                const params = new URLSearchParams();
+                params.append('subject_id', subjectId);
+
+                fetch(`/admin/api/subject-stats?${params.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
                     averageAttendance.textContent = data.average_attendance + '%';
                     averageAbsence.textContent = data.average_absence + '%';
                 })
                 .catch(error => {
-                    console.error('Error loading stats:', error);
+                    console.error('Error loading subject stats:', error);
                 });
             }
 

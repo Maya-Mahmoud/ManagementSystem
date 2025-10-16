@@ -99,6 +99,7 @@ Route::middleware([AdminOrProfessorMiddleware::class])
             Route::get('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'index'])->name('api.subjects');
             Route::get('subjects-performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'getSubjectsApi'])->name('api.subjects-performance');
             Route::get('stats', [\App\Http\Controllers\Admin\PerformanceController::class, 'getStatsApi'])->name('api.stats');
+            Route::get('subject-stats', [\App\Http\Controllers\Admin\PerformanceController::class, 'getSubjectStatsApi'])->name('api.subject-stats');
         });
 
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');

@@ -13,8 +13,12 @@ class PerformanceController extends Controller
     {
         $departments = \App\Models\Department::all();
 
-        // Calculate initial stats
-        $stats = $this->calculateStats($request);
+        // Calculate initial stats - default to 0
+        $stats = [
+            'total_students' => 0,
+            'average_attendance' => 0,
+            'average_absence' => 0,
+        ];
 
         // If AJAX request for subjects
         if ($request->expectsJson() || $request->is('admin/api/*')) {
@@ -33,52 +37,15 @@ class PerformanceController extends Controller
         }
 
         if ($request->filled('department_id')) {
-            $studentQuery->whereHas('user', function ($q) use ($request) {
-                $q->where('department_id', $request->department_id);
-            });
+            $studentQuery->where('department_id', $request->department_id);
         }
 
         $totalStudents = $studentQuery->count();
 
-        $subjectQuery = Subject::query();
-
-        if ($request->filled('year')) {
-            $subjectQuery->where('year', $request->year);
-        }
-
-        if ($request->filled('department_id')) {
-            $subjectQuery->where('department_id', $request->department_id);
-        }
-
-        $subjects = $subjectQuery->get();
-        $totalAttendanceRate = 0;
-        $totalAbsenceRate = 0;
-        $subjectCount = $subjects->count();
-
-        if ($subjectCount > 0) {
-            foreach ($subjects as $subject) {
-                $attendanceData = StudentSubjectAttendance::where('subject_id', $subject->id)->get();
-                $totalPresence = $attendanceData->sum('presence_count');
-                $totalAbsence = $attendanceData->sum('absence_count');
-                $total = $totalPresence + $totalAbsence;
-                if ($total > 0) {
-                    $attendanceRate = ($totalPresence / $total) * 100;
-                    $absenceRate = ($totalAbsence / $total) * 100;
-                    $totalAttendanceRate += $attendanceRate;
-                    $totalAbsenceRate += $absenceRate;
-                }
-            }
-            $averageAttendance = round($totalAttendanceRate / $subjectCount, 2);
-            $averageAbsence = round($totalAbsenceRate / $subjectCount, 2);
-        } else {
-            $averageAttendance = 0;
-            $averageAbsence = 0;
-        }
-
         return [
             'total_students' => $totalStudents,
-            'average_attendance' => $averageAttendance,
-            'average_absence' => $averageAbsence,
+            'average_attendance' => 0,
+            'average_absence' => 0,
         ];
     }
 
@@ -149,5 +116,26 @@ class PerformanceController extends Controller
     {
         $stats = $this->calculateStats($request);
         return response()->json($stats);
+    }
+
+    public function getSubjectStatsApi(Request $request)
+    {
+        $subjectId = $request->subject_id;
+        if (!$subjectId) {
+            return response()->json(['average_attendance' => 0, 'average_absence' => 0]);
+        }
+
+        $attendanceData = StudentSubjectAttendance::where('subject_id', $subjectId)->get();
+        $totalPresence = $attendanceData->sum('presence_count');
+        $totalAbsence = $attendanceData->sum('absence_count');
+        $total = $totalPresence + $totalAbsence;
+
+        $averageAttendance = $total > 0 ? round(($totalPresence / $total) * 100, 2) : 0;
+        $averageAbsence = $total > 0 ? round(($totalAbsence / $total) * 100, 2) : 0;
+
+        return response()->json([
+            'average_attendance' => $averageAttendance,
+            'average_absence' => $averageAbsence,
+        ]);
     }
 }
