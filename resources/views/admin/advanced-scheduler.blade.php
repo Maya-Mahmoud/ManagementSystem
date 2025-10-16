@@ -4,12 +4,12 @@
             <h1 class="text-3xl font-bold text-gray-900">Advanced Scheduler</h1>
             <p class="text-gray-600 mt-1">Schedule lectures with conflict detection and recurring options</p>
         </div>
-        <button id="scheduleLectureBtn" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded shadow">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Schedule Lecture
-        </button>
+        <button id="scheduleLectureBtn" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded shadow">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    Schedule Lecture
+</button>
     </div>
 
     <div class="bg-white rounded-lg shadow p-6 px-10 my-6">
@@ -25,15 +25,47 @@
     <!-- Schedule Lecture Modal -->
     <div id="scheduleLectureModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg p-6 w-[600px]">
-            <h3 class="text-xl font-semibold mb-4">Schedule New Lecture</h3>
+          <h3 class="text-xl font-semibold mb-4" style="color: #6B46C1;">Schedule New Lecture</h3>
             <form id="scheduleLectureForm" class="space-y-4">
+                <div class="flex space-x-4">
+                    <div class="w-1/3">
+                        <label for="department_id" class="block text-sm font-medium text-gray-700">Department</label>
+                        <select id="department_id" name="department_id" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-h-40 overflow-y-auto">
+                            <option value="">Select Department</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-1/3">
+                        <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
+                        <select id="year" name="year" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-h-40 overflow-y-auto">
+                            <option value="">Select Year</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                            <option value="third">Third</option>
+                            <option value="fourth">Fourth</option>
+                            <option value="fifth">Fifth</option>
+                        </select>
+                    </div>
+                    <div class="w-1/3">
+                        <label for="semester" class="block text-sm font-medium text-gray-700">Semester</label>
+                        <select id="semester" name="semester" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-h-40 overflow-y-auto">
+                            <option value="">Select Semester</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="subject_id" class="block text-sm font-medium text-gray-700">Subject</label>
+                    <select id="subject_id" name="subject_id" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-h-40 overflow-y-auto">
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-700">Lecture Title</label>
                     <input type="text" id="title" name="title" required class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
-                </div>
-                <div>
-                    <label for="subject" class="block text-sm font-medium text-gray-700">Subject</label>
-                    <input type="text" id="subject" name="subject" required class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
                 </div>
                 <div>
                     <label for="professor" class="block text-sm font-medium text-gray-700">Professor</label>
@@ -41,7 +73,7 @@
                 </div>
                 <div>
                     <label for="hall_id" class="block text-sm font-medium text-gray-700">Hall</label>
-                    <select id="hall_id" name="hall_id" required class="mt-1 block w-full border border-gray-300 rounded px-3 py-2">
+                    <select id="hall_id" name="hall_id" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-h-40 overflow-y-auto">
                         <option value="">Select a hall</option>
                     </select>
                 </div>
@@ -77,9 +109,9 @@
                         <input type="date" id="end_date" name="end_date" class="mt-1 block w-40 border border-gray-300 rounded px-3 py-2" />
                     </div>
                 </div>
-                <div class="flex justify-end space-x-3">
+                <div class="flex justify-end space-x-3 mt-4">
                     <button type="button" id="cancelBtn" class="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded bg-purple-600 text-white hover:bg-purple-700">Schedule Lecture</button>
+                   <button type="submit" class="px-4 py-2 rounded bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700">Schedule Lecture</button>
                 </div>
             </form>
         </div>
@@ -105,7 +137,6 @@
             const formData = new FormData(scheduleLectureForm);
             const data = Object.fromEntries(formData.entries());
 
-            // Convert recurringLecture to boolean
             data.recurringLecture = scheduleLectureForm.querySelector('#recurringLecture').checked;
 
             try {
@@ -121,7 +152,6 @@
                 if (response.ok) {
                     alert('Lecture scheduled successfully!');
                     scheduleLectureModal.classList.add('hidden');
-                    // Redirect to lectures page to see the scheduled lectures
                     window.location.href = "{{ route('admin.lectures') }}";
                 } else {
                     const errorData = await response.json();
@@ -133,24 +163,20 @@
             }
         });
 
-        // Fetch halls dynamically when hall dropdown is focused (better than click)
+        // Fetch halls dynamically
         const hallDropdown = document.getElementById('hall_id');
         hallDropdown.addEventListener('focus', async () => {
-            console.log('Hall dropdown focused');
-            if (hallDropdown.options.length <= 1) { // Only fetch if options not loaded yet
+            if (hallDropdown.options.length <= 1) {
                 try {
                     const response = await fetch('/admin/api/halls');
                     if (response.ok) {
                         const halls = await response.json();
-                        console.log('Fetched halls:', halls);
                         halls.forEach(hall => {
                             const option = document.createElement('option');
                             option.value = hall.id;
-                            option.textContent = hall.hall_name; // Use hall_name as per model
+                            option.textContent = hall.hall_name;
                             hallDropdown.appendChild(option);
                         });
-                    } else {
-                        console.error('Failed to fetch halls');
                     }
                 } catch (error) {
                     console.error('Error fetching halls:', error);
@@ -158,16 +184,14 @@
             }
         });
 
-        // Fetch and render lectures for selected date
+        // Fetch and render lectures
         const scheduleDateInput = document.getElementById('scheduleDate');
         const scheduleOverview = document.getElementById('scheduleOverview');
 
         async function fetchLecturesByDate(date) {
             try {
                 const response = await fetch(`/admin/api/lectures-by-date?date=${date}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch lectures');
-                }
+                if (!response.ok) throw new Error('Failed to fetch lectures');
                 const lectures = await response.json();
                 renderLectures(lectures, date);
             } catch (error) {
@@ -189,14 +213,12 @@
                 `;
                 return;
             }
-
             scheduleOverview.innerHTML = '';
             lectures.forEach(lecture => {
                 const startTime = new Date(lecture.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const endTime = new Date(lecture.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 const hallName = lecture.hall.hall_name || 'Unknown Hall';
                 const professorName = lecture.user ? `بروفيسور: ${lecture.user.name}` : 'Unknown Professor';
-
                 const lectureDiv = document.createElement('div');
                 lectureDiv.className = 'bg-gray-100 rounded p-4 mb-3 shadow w-full';
                 lectureDiv.innerHTML = `
@@ -217,23 +239,51 @@
             });
         }
 
-        // Initial fetch for today's date
         fetchLecturesByDate(scheduleDateInput.value);
+        scheduleDateInput.addEventListener('change', (e) => fetchLecturesByDate(e.target.value));
 
-        // Fetch lectures on date change
-        scheduleDateInput.addEventListener('change', (e) => {
-            fetchLecturesByDate(e.target.value);
-        });
-
-        // Toggle recurring options visibility on checkbox change
+        // Toggle recurring options
         const recurringCheckbox = document.getElementById('recurringLecture');
         const recurringOptions = document.getElementById('recurringOptions');
         recurringCheckbox.addEventListener('change', () => {
-            if (recurringCheckbox.checked) {
-                recurringOptions.classList.remove('hidden');
-            } else {
-                recurringOptions.classList.add('hidden');
-            }
+            recurringOptions.classList.toggle('hidden', !recurringCheckbox.checked);
         });
+
+        // Cascading dropdowns for subjects
+        const departmentDropdown = document.getElementById('department_id');
+        const yearDropdown = document.getElementById('year');
+        const semesterDropdown = document.getElementById('semester');
+        const subjectDropdown = document.getElementById('subject_id');
+
+        async function fetchSubjects() {
+            const departmentId = departmentDropdown.value;
+            const year = yearDropdown.value;
+            const semester = semesterDropdown.value;
+
+            if (!departmentId || !year || !semester) {
+                subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/api/subjects?department_id=${departmentId}&year=${year}&semester=${semester}`);
+                if (response.ok) {
+                    const subjects = await response.json();
+                    subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
+                    subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.id;
+                        option.textContent = subject.name;
+                        subjectDropdown.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching subjects:', error);
+            }
+        }
+
+        [departmentDropdown, yearDropdown, semesterDropdown].forEach(dropdown =>
+            dropdown.addEventListener('change', fetchSubjects)
+        );
     </script>
 </x-admin-layout>

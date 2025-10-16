@@ -110,7 +110,9 @@ class LectureController extends Controller
     public function advancedScheduler()
     {
         $halls = Hall::all();
-        return view('admin.advanced-scheduler', compact('halls'));
+         $subjects = Subject::all();
+        $departments = \App\Models\Department::all();
+        return view('admin.advanced-scheduler', compact('halls','subjects', 'departments'));
     }
 
     public function store(Request $request)
@@ -118,8 +120,7 @@ class LectureController extends Controller
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
-                'subject' => 'required|string|max:255',
-                'department' => 'required|string',
+                'subject_id' => 'required|exists:subjects,id',
                 'hall_id' => 'required|exists:halls,id',
                 'start_time' => 'required|date',
                 'end_time' => 'required|date|after:start_time',
@@ -155,26 +156,10 @@ class LectureController extends Controller
 
             Log::info('Lecture creation attempt', ['validated_data' => $validated]);
 
-            $departmentMapping = [
-                'الاتصالات' => 'communications',
-                'الطاقة' => 'energy',
-                'البحرية' => 'marine',
-                'التصميم والإنتاج' => 'design_and_production',
-                'الحواسيب' => 'computers',
-                'الطبية' => 'medical',
-                'الميكاترونيكس' => 'mechatronics',
-                'الطاقة' => 'power',
-            ];
-
-            $dbDepartmentName = $departmentMapping[$validated['department']] ?? $validated['department'];
-            $department = \App\Models\Department::whereRaw('LOWER(name) = LOWER(?)', [$dbDepartmentName])->firstOrFail();
-            $validated['department_id'] = $department->id;
-
-            $subject = Subject::where('name', $validated['subject'])->first();
+            $subject = Subject::find($validated['subject_id']);
             if (!$subject) {
-                return response()->json(['success' => false, 'message' => 'Subject not found: ' . $validated['subject']], 404);
+                return response()->json(['success' => false, 'message' => 'Subject not found.'], 404);
             }
-            $validated['subject_id'] = $subject->id;
 
             $validated['professor'] = Auth::user()->name;
             $validated['user_id'] = Auth::id();
@@ -196,11 +181,9 @@ class LectureController extends Controller
 
                     $lectures[] = [
                         'title' => $validated['title'],
-                        'subject' => $validated['subject'],
                         'subject_id' => $validated['subject_id'],
                         'professor' => $validated['professor'],
                         'hall_id' => $validated['hall_id'],
-                        'department_id' => $validated['department_id'],
                         'start_time' => $start,
                         'end_time' => $end,
                         'max_students' => $validated['max_students'],
@@ -215,18 +198,9 @@ class LectureController extends Controller
                 return response()->json(['success' => true, 'message' => 'Recurring lectures created successfully!'], 201);
             }
 
-            $professorName = $validated['professor'] ?? null;
-            unset($validated['professor']);
-            unset($validated['department']);
-
             $lecture = Lecture::create($validated);
             $lecture->qr_code = Str::uuid();
             $lecture->save();
-
-            if ($professorName) {
-                $lecture->professor = $professorName;
-                $lecture->save();
-            }
 
             // Update hall status after creating lecture
             $hall->updateStatusBasedOnLectures();

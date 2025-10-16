@@ -25,6 +25,12 @@ class SubjectController extends Controller
         }
 
         $subjects = $query->with('department')->get();
+
+        // Return JSON for API requests
+        if ($request->expectsJson() || $request->is('admin/api/*')) {
+            return response()->json($subjects);
+        }
+
         $departments = \App\Models\Department::all();
         return view('admin.subjects', compact('subjects', 'departments'));
     }

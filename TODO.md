@@ -1,19 +1,32 @@
-# TODO: Automate Hall Status Based on Lectures
+# TODO List for Performance Page Implementation
 
-## Overview
-Implement automatic hall status updates: 'booked' when a lecture starts, 'available' when it ends. Include overlap checks and time-based automation.
+## Current Work
+Implementing a Performance page for admins with filters for year, semester, department, and subject, displaying relevant subjects or attendance data.
 
-## Steps
-- [x] Identify lecture creation file (e.g., Livewire component or controller for adding lectures) - Found: app/Http/Controllers/Admin/LectureController.php (store method)
-- [x] Enhance Hall model: Add `isOccupiedAt()` and `updateStatusBasedOnLectures()` methods
-- [x] Enhance Lecture model: Add `overlapsWith()` method for conflict checks
-- [x] Enhance Booking model: Add `overlapsWith()` method (and consider adding `end_time` field via migration)
-- [x] Create Artisan command: `UpdateHallStatuses` for scheduled status updates
-- [x] Update Kernel.php: Schedule the command to run every 5 minutes
-- [x] Modify lecture creation flow: Add overlap validation before saving lecture
-- [x] Update HallBookingController: Add overlap checks in `book()` and recompute status in `release()`
-- [x] Update views: Display dynamic status in hall/lecture management pages
-- [x] Create migration: Add `end_time` to bookings if keeping manual bookings with duration
-- [x] Test: Run migrations, schedule, and verify status changes
-- [x] Edge cases: Handle ongoing lectures at startup, multiple lectures per hall
-- [x] Fix modal: Update JavaScript to use data attributes and add CSRF token; fix route middleware
+## Key Technical Concepts
+- Laravel Controller for handling requests and data fetching.
+- Blade views for UI with filters and dynamic loading via AJAX.
+- Models: Subject, StudentSubjectAttendance, Department for data relationships.
+- Routes: Adding new admin route protected by middleware.
+- AJAX for dynamic dropdown population and data display.
+
+## Relevant Files and Code
+- New: app/Http/Controllers/Admin/PerformanceController.php - Handles index and API methods for filters.
+- Edit: routes/web.php - Add route for performance.
+- Edit: resources/views/components/admin-layout.blade.php - Update Performance link.
+- New: resources/views/admin/performance.blade.php - View with filters and display logic.
+- Models already exist: Subject, StudentSubjectAttendance, etc.
+
+## Problem Solving
+- Reuse existing filtering logic from SubjectController.
+- Ensure dynamic subject loading based on year/semester/department selections.
+- Display performance data like attendance counts per subject.
+
+## Pending Tasks and Next Steps
+- [x] Step 1: Create app/Http/Controllers/Admin/PerformanceController.php with index method to render view and API method to filter subjects by year, semester, department.
+- [x] Step 2: Add route in routes/web.php: Route::get('performance', [PerformanceController::class, 'index'])->name('performance'); under admin middleware group.
+- [x] Step 3: Update resources/views/components/admin-layout.blade.php to change Performance href to {{ route('admin.performance') }}.
+- [x] Step 4: Create resources/views/admin/performance.blade.php with filter dropdowns (year, semester, department), AJAX to load subjects, and display section for subjects with attendance stats.
+- [x] Step 5: Verify implementation (e.g., via browser or commands if needed). Route registered, server running, ready for testing.
+
+Quote from recent conversation: "I want you to help me and do these things." - User confirmation to proceed.

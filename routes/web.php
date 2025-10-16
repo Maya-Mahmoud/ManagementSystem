@@ -96,11 +96,14 @@ Route::middleware([AdminOrProfessorMiddleware::class])
             Route::apiResource('users', \App\Http\Controllers\Admin\UsersController::class);
             Route::get('lectures/{id}/attendance', [LectureController::class, 'showAttendance'])->name('lectures.attendance');
             Route::get('lectures/{id}/attendance/export', [LectureController::class, 'exportAttendance'])->name('lectures.attendance.export');
+            Route::get('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'index'])->name('api.subjects');
+            Route::get('subjects-performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'getSubjectsApi'])->name('api.subjects-performance');
+            Route::get('stats', [\App\Http\Controllers\Admin\PerformanceController::class, 'getStatsApi'])->name('api.stats');
         });
 
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');
+        Route::get('performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('performance');
 
-       
     });
 
 // مسارات البروفيسور (Professor Routes) - محمية بـ AdminOrProfessorMiddleware
