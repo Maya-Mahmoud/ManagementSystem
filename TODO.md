@@ -1,3 +1,3 @@
-- [ ] Update PerformanceController::getSubjectStatsApi to include total_lectures
-- [ ] Update performance.blade.php to add Total Lectures stats card
-- [ ] Update JavaScript in performance.blade.php to display total_lectures
+- [ ] Add exportCsv method to PerformanceController
+- [ ] Add Export CSV button to performance.blade.php
+- [ ] Add route for /admin/performance/export-csv

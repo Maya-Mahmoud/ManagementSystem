@@ -140,5 +140,52 @@ class PerformanceController extends Controller
             'average_absence' => $averageAbsence,
             'total_lectures' => $totalLectures,
         ]);
+    }public function exportCsv(Request $request)
+{
+    $subjectId = $request->subject_id;
+    if (!$subjectId) {
+        return response()->json(['error' => 'Subject ID is required'], 400);
     }
+
+    $subject = Subject::find($subjectId);
+    if (!$subject) {
+        return response()->json(['error' => 'Subject not found'], 404);
+    }
+
+    $filename = 'attendance_' . $subject->name . '_' . now()->format('Y-m-d_H-i-s') . '.csv';
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ];
+
+    $callback = function () use ($subjectId) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, ['Student Name', 'Number of Attendees', 'Number of Absences', 'Attendance Rate']);
+
+        StudentSubjectAttendance::join('students', 'student_subject_attendances.student_id', '=', 'students.id')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->where('student_subject_attendances.subject_id', $subjectId)
+            ->select(
+                'users.name',
+                'student_subject_attendances.presence_count',
+                'student_subject_attendances.absence_count'
+            )
+            ->chunk(1000, function ($attendances) use ($file) {
+                foreach ($attendances as $data) {
+                    $totalLectures = $data->presence_count + $data->absence_count; // حساب إجمالي المحاضرات
+                    $attendanceRate = $totalLectures > 0 ? round(($data->presence_count / $totalLectures) * 100, 2) : 0; // نسبة الحضور
+                    fputcsv($file, [
+                        $data->name,
+                        $data->presence_count,
+                        $data->absence_count,
+                        $attendanceRate . '%'
+                    ]);
+                }
+            });
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 }

@@ -4,13 +4,13 @@
         <!-- Page Header -->
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Performance Analysis</h1>
-            <p class="text-gray-600">Monitor subject performance and attendance metrics</p>
+            <p class="text-gray-600">Monitor attendance metrics</p>
         </div>
 
         <!-- Filters -->
         <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Filter Performance Data</h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Select year, semester, department, and subject to view attendance percentage:</h3>
                 <form id="filterForm" class="flex flex-wrap gap-4 items-end">
                     <div class="flex-1 min-w-[200px]">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
@@ -47,8 +47,14 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button type="button" id="filterBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">search</button>
-                        <button type="button" id="clearBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600">Clear</button>
+                        {{-- <button type="button" id="filterBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">search</button>
+                        <button type="button" id="clearBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600">Clear</button> --}}
+                        <button type="button" id="exportCsvBtn" class="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700" disabled>
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Export CSV
+                        </button>
                     </div>
                 </form>
             </div>
@@ -103,7 +109,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <h3 class="text-lg font-medium text-gray-900">عدد المحاضرات</h3>
+                        <h3 class="text-lg font-medium text-gray-900">Number of lectures</h3>
                         <p id="totalLectures" class="text-2xl font-bold text-purple-600">0</p>
                     </div>
                 </div>
@@ -125,6 +131,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const filterBtn = document.getElementById('filterBtn');
             const clearBtn = document.getElementById('clearBtn');
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
             const performanceData = document.getElementById('performanceData');
             const yearSelect = document.getElementById('year');
             const semesterSelect = document.getElementById('semester');
@@ -145,6 +152,7 @@
 
             subjectSelect.addEventListener('change', function() {
                 loadSubjectStats();
+                exportCsvBtn.disabled = !subjectSelect.value;
             });
 
             filterBtn.addEventListener('click', function() {
@@ -162,6 +170,36 @@
                 averageAttendance.textContent = '0%';
                 averageAbsence.textContent = '0%';
                 totalLectures.textContent = '0';
+                exportCsvBtn.disabled = true;
+            });
+
+            exportCsvBtn.addEventListener('click', function() {
+                const subjectId = subjectSelect.value;
+                if (!subjectId) {
+                    alert('Please select a subject first.');
+                    return;
+                }
+                fetch(`/admin/performance/export-csv?subject_id=${subjectId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to download CSV');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'subject_attendance.csv';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    })
+                    .catch(error => {
+                        console.error('Error downloading CSV:', error);
+                        alert('Error downloading CSV. Please try again.');
+                    });
             });
 
             function loadSubjects() {
