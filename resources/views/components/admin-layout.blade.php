@@ -32,8 +32,8 @@
     </div>
     <div>
        <h4 class="text-xl font-semibold" style="color: #6B46C1">Hall Manager</h4>
-                                <p class="text-xs text-gray-500">College Management System</p>
-                            </div>
+                                <p class="text-xl ext-gray-500">College Management System </p>
+                            </div> 
                         </div>
 
                         <!-- Right side -->
