@@ -134,6 +134,12 @@
         scheduleLectureForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const subjectSelect = document.getElementById('subject_id');
+            if (!subjectSelect.value) {
+                alert('Please select a subject.');
+                return;
+            }
+
             const formData = new FormData(scheduleLectureForm);
             const data = Object.fromEntries(formData.entries());
 

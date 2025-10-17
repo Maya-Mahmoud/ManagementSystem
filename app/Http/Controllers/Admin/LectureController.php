@@ -161,6 +161,9 @@ class LectureController extends Controller
                 return response()->json(['success' => false, 'message' => 'Subject not found.'], 404);
             }
 
+            // Set both subject and subject_id
+            $validated['subject'] = $subject->name;
+
             $validated['professor'] = Auth::user()->name;
             $validated['user_id'] = Auth::id();
 
@@ -181,6 +184,7 @@ class LectureController extends Controller
 
                     $lectures[] = [
                         'title' => $validated['title'],
+                        'subject' => $validated['subject'],
                         'subject_id' => $validated['subject_id'],
                         'professor' => $validated['professor'],
                         'hall_id' => $validated['hall_id'],

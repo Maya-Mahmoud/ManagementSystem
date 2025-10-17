@@ -77,11 +77,11 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                        <select id="lectureSubject" name="subject" required
+                        <select id="lectureSubject" name="subject_id" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">Select a subject</option>
                             @foreach($subjects as $subject)
-                                <option value="{{ $subject->name }}" data-department="{{ $subject->department }}" data-year="{{ $subject->year }}" data-semester="{{ $subject->semester }}">{{ $subject->name }}</option>
+                                <option value="{{ $subject->id }}" data-department="{{ $subject->department }}" data-year="{{ $subject->year }}" data-semester="{{ $subject->semester }}">{{ $subject->name }}</option>
                             @endforeach
                         </select>
                     </div>
