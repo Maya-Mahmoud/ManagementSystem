@@ -55,7 +55,7 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -95,6 +95,19 @@
                     </div>
                 </div>
             </div>
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900">عدد المحاضرات</h3>
+                        <p id="totalLectures" class="text-2xl font-bold text-purple-600">0</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Performance Data -->
@@ -120,6 +133,7 @@
             const totalStudents = document.getElementById('totalStudents');
             const averageAttendance = document.getElementById('averageAttendance');
             const averageAbsence = document.getElementById('averageAbsence');
+            const totalLectures = document.getElementById('totalLectures');
 
             // Load subjects and stats when filters change
             [yearSelect, semesterSelect, departmentSelect].forEach(select => {
@@ -147,6 +161,7 @@
                 totalStudents.textContent = '0';
                 averageAttendance.textContent = '0%';
                 averageAbsence.textContent = '0%';
+                totalLectures.textContent = '0';
             });
 
             function loadSubjects() {
@@ -203,6 +218,7 @@
                     totalStudents.textContent = data.total_students;
                     averageAttendance.textContent = '0%';
                     averageAbsence.textContent = '0%';
+                    totalLectures.textContent = '0';
                 })
                 .catch(error => {
                     console.error('Error loading stats:', error);
@@ -215,6 +231,7 @@
                 if (!subjectId) {
                     averageAttendance.textContent = '0%';
                     averageAbsence.textContent = '0%';
+                    totalLectures.textContent = '0';
                     return;
                 }
 
@@ -231,6 +248,7 @@
                 .then(data => {
                     averageAttendance.textContent = data.average_attendance + '%';
                     averageAbsence.textContent = data.average_absence + '%';
+                    totalLectures.textContent = data.total_lectures;
                 })
                 .catch(error => {
                     console.error('Error loading subject stats:', error);

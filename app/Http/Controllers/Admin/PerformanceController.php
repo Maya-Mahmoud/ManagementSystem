@@ -122,7 +122,7 @@ class PerformanceController extends Controller
     {
         $subjectId = $request->subject_id;
         if (!$subjectId) {
-            return response()->json(['average_attendance' => 0, 'average_absence' => 0]);
+            return response()->json(['average_attendance' => 0, 'average_absence' => 0, 'total_lectures' => 0]);
         }
 
         $attendanceData = StudentSubjectAttendance::where('subject_id', $subjectId)->get();
@@ -133,9 +133,12 @@ class PerformanceController extends Controller
         $averageAttendance = $total > 0 ? round(($totalPresence / $total) * 100, 2) : 0;
         $averageAbsence = $total > 0 ? round(($totalAbsence / $total) * 100, 2) : 0;
 
+        $totalLectures = \App\Models\Lecture::where('subject_id', $subjectId)->count();
+
         return response()->json([
             'average_attendance' => $averageAttendance,
             'average_absence' => $averageAbsence,
+            'total_lectures' => $totalLectures,
         ]);
     }
 }
