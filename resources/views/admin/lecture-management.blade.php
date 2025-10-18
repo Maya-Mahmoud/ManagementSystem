@@ -406,7 +406,7 @@
                     return `
                         <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-900">${lecture.title}</h3>
+                                <h3 class="text-lg font-semibold text-gray-900"> ${lecture.subject.name} / ${lecture.title}</h3>
                                 <div class="flex items-center space-x-2">
                                     <button onclick="editLecture(${lecture.id})" class="text-purple-600 hover:text-purple-900 text-xs font-medium transition-colors duration-200">
                                         Edit

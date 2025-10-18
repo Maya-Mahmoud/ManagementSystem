@@ -35,7 +35,7 @@
             </div>
             <div>
                 <p class="text-sm font-medium text-gray-700">
-                    {{ \Carbon\Carbon::parse($lecture->start_time)->format('l, F d') }}
+                    {{ \Carbon\Carbon::parse($lecture->start_time)->locale('ar')->isoFormat('dddd, MMMM D') }}
                 </p>
                 <p class="text-sm text-gray-500">
                     {{ \Carbon\Carbon::parse($lecture->start_time)->format('Y') }}
@@ -181,7 +181,7 @@
                                         {{ ucfirst($attendance->status) }}
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-600">Scanned at: {{ $attendance->scanned_at ? \Carbon\Carbon::parse($attendance->scanned_at)->format('M d, Y H:i') : 'N/A' }}</p>
+                                <p class="text-sm text-gray-600">Scanned at: {{ $attendance->scanned_at ? \Carbon\Carbon::parse($attendance->scanned_at)->locale('ar')->isoFormat('MMMM D, YYYY H:mm') : 'N/A' }}</p>
                             </div>
                         @endforeach
                     </div>
