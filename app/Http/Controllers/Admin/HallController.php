@@ -10,7 +10,10 @@ class HallController extends Controller
 {
     public function index()
     {
-        $halls = Hall::orderBy('created_at', 'desc')->get();
+        $halls = Hall::orderBy('created_at', 'desc')->get()->map(function ($hall) {
+            $hall->updateStatusBasedOnLectures(); // Update status before returning
+            return $hall;
+        });
         return response()->json($halls);
     }
 

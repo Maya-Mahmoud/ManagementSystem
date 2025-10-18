@@ -138,28 +138,18 @@
                 </div>
 
                 <div id="bookingDetailsContent">
-                    <div class="mb-4">
-                        <label for="startTimeSelect" class="block text-sm font-medium text-gray-700 mb-2">Start Time:</label>
-                        <select id="startTimeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select Start Time</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label for="endTimeSelect" class="block text-sm font-medium text-gray-700 mb-2">End Time:</label>
-                        <select id="endTimeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select End Time</option>
-                        </select>
-                    </div>
-                    <div id="availabilityCheck" class="mb-4 hidden">
-                        <p id="availabilityMessage" class="text-sm"></p>
-                    </div>
-                    <div class="flex justify-end space-x-2">
-                        <button id="checkAvailabilityBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                            Check Availability
+                    <!-- Filter Buttons -->
+                    <div class="flex justify-center space-x-4 mb-4">
+                        <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
+                            Upcoming
                         </button>
-                        <button id="bookHallBtn" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors hidden">
-                            Book Hall
+                        <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
+                            Completed
                         </button>
+                    </div>
+
+                    <div id="lecturesContainer">
+                        <!-- Lectures will be displayed here -->
                     </div>
                 </div>
             </div>
@@ -167,6 +157,8 @@
     </div>
 
     <script>
+        let currentLectures = [];
+
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.booking-details-btn');
             buttons.forEach(btn => {
@@ -203,55 +195,112 @@
                 })
                 .then(data => {
                     if (data.success && data.data && data.data.length > 0) {
-                        let html = '<div class="space-y-4">';
-                        data.data.forEach(lecture => {
-                            html += `
-                                <div class="bg-white border border-purple-300 rounded-lg p-4 shadow-sm">
-                                    <div class="mb-3">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Lecture Title:</label>
-                                        <p class="text-sm font-semibold text-gray-900">${lecture.title || 'N/A'}</p>
-                                    </div>
-                                    <div class="grid grid-cols-1 gap-2 text-sm">
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600">Subject:</span>
-                                            <span class="font-medium text-gray-900">${lecture.subject || 'N/A'}</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600">Professor:</span>
-                                            <span class="font-medium text-gray-900">${lecture.professor || 'N/A'}</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600">Start Time:</span>
-                                            <span class="font-medium text-gray-900">${lecture.start_time ? new Date(lecture.start_time).toLocaleString('en-GB') : 'N/A'}</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-600">End Time:</span>
-                                            <span class="font-medium text-gray-900">${lecture.end_time ? new Date(lecture.end_time).toLocaleString('en-GB') : 'N/A'}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                                            <span class="text-gray-600">Status:</span>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                lecture.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                                                lecture.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                                                'bg-gray-100 text-gray-800'
-                                            }">
-                                                ${lecture.status ? lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1) : 'Unknown'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                        content.innerHTML = html;
+                        currentLectures = data.data;
+                        displayLectures('upcoming'); // Default to upcoming
                     } else {
-                        content.innerHTML = '<p class="text-center text-gray-500">No lectures scheduled for this hall</p>';
+                        content.innerHTML = `
+                            <!-- Filter Buttons -->
+                            <div class="flex justify-center space-x-4 mb-4">
+                                <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
+                                    Upcoming
+                                </button>
+                                <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
+                                    Completed
+                                </button>
+                            </div>
+                            <div id="lecturesContainer">
+                                <p class="text-center text-gray-500">No lectures scheduled for this hall</p>
+                            </div>
+                        `;
+                        attachFilterListeners();
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching lectures:', error);
-                    content.innerHTML = `<p class="text-center text-red-500">Error loading booking details: ${error.message}</p>`;
+                    content.innerHTML = `
+                        <!-- Filter Buttons -->
+                        <div class="flex justify-center space-x-4 mb-4">
+                            <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
+                                Upcoming
+                            </button>
+                            <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
+                                    Completed
+                                </button>
+                            </div>
+                            <div id="lecturesContainer">
+                                <p class="text-center text-red-500">Error loading booking details: ${error.message}</p>
+                            </div>
+                    `;
+                    attachFilterListeners();
                 });
+        }
+
+        function displayLectures(filterType) {
+            const container = document.getElementById('lecturesContainer');
+            const filteredLectures = currentLectures.filter(lecture => lecture.status === filterType);
+
+            if (filteredLectures.length > 0) {
+                let html = '<div class="space-y-4">';
+                filteredLectures.forEach(lecture => {
+                    html += `
+                        <div class="bg-white border border-purple-300 rounded-lg p-4 shadow-sm">
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Lecture Title:</label>
+                                <p class="text-sm font-semibold text-gray-900">${lecture.title || 'N/A'}</p>
+                            </div>
+                            <div class="grid grid-cols-1 gap-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Subject:</span>
+                                    <span class="font-medium text-gray-900">${lecture.subject || 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Professor:</span>
+                                    <span class="font-medium text-gray-900">${lecture.professor || 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Start Time:</span>
+                                    <span class="font-medium text-gray-900">${lecture.start_time ? new Date(lecture.start_time).toLocaleString('en-GB') : 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">End Time:</span>
+                                    <span class="font-medium text-gray-900">${lecture.end_time ? new Date(lecture.end_time).toLocaleString('en-GB') : 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                                    <span class="text-gray-600">Status:</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        lecture.status === 'ongoing' ? 'bg-green-100 text-green-800' :
+                                        lecture.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                                        'bg-gray-100 text-gray-800'
+                                    }">
+                                        ${lecture.status ? lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1) : 'Unknown'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<p class="text-center text-gray-500">No ${filterType} lectures found</p>`;
+            }
+        }
+
+        function attachFilterListeners() {
+            const upcomingBtn = document.getElementById('upcomingBtn');
+            const completedBtn = document.getElementById('completedBtn');
+
+            if (upcomingBtn) {
+                upcomingBtn.addEventListener('click', function() {
+                    displayLectures('upcoming');
+                });
+            }
+
+            if (completedBtn) {
+                completedBtn.addEventListener('click', function() {
+                    displayLectures('completed');
+                });
+            }
         }
 
         // Close modal functionality
