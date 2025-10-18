@@ -181,6 +181,7 @@
             const modalTitle = document.getElementById('bookingModalTitle');
             const modal = document.getElementById('bookingDetailsModal');
             const lecturesContainer = document.getElementById('lecturesContainer');
+            const filterButtons = document.querySelector('.flex.justify-center.space-x-4.mb-4');
 
             if (!modalTitle || !modal || !lecturesContainer) {
                 console.error('Modal elements not found');
@@ -196,9 +197,65 @@
                 .then(data => {
                     if (data.success && data.data.length > 0) {
                         currentLectures = data.data;
-                        displayLectures('upcoming');
+                        const currentLecture = currentLectures.find(l => l.status === 'ongoing');
+                        if (currentLecture) {
+                            // Hide filter buttons and show current lecture message
+                            if (filterButtons) filterButtons.style.display = 'none';
+                            lecturesContainer.innerHTML = `
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-red-600 mb-4">There is a lecture in this hall now.</p>
+                                    <div class="bg-white border border-purple-300 rounded-lg p-4 shadow-sm">
+                                        <div class="mb-3">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Lecture title:</label>
+                                            <p class="text-sm font-semibold text-gray-900">${currentLecture.title || 'N/A'}</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">subject:</span>
+                                                <span class="font-medium text-gray-900">${currentLecture.subject || 'N/A'}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Professor:</span>
+                                                <span class="font-medium text-gray-900">${currentLecture.professor || 'N/A'}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Start time</span>
+                                                <span class="font-medium text-gray-900">
+                                                    ${currentLecture.start_time
+                                                        ? new Date(currentLecture.start_time).toLocaleString('en-US', {
+                                                            timeZone: 'Asia/Damascus',
+                                                            hour: 'numeric',
+                                                            minute: '2-digit',
+                                                            hour12: true
+                                                        })
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">end time:</span>
+                                                <span class="font-medium text-gray-900">
+                                                    ${currentLecture.end_time
+                                                        ? new Date(currentLecture.end_time).toLocaleString('en-US', {
+                                                            timeZone: 'Asia/Damascus',
+                                                            hour: 'numeric',
+                                                            minute: '2-digit',
+                                                            hour12: true
+                                                        })
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Show filter buttons and lectures
+                            if (filterButtons) filterButtons.style.display = 'flex';
+                            displayLectures('upcoming');
+                        }
                     } else {
                         currentLectures = [];
+                        if (filterButtons) filterButtons.style.display = 'flex';
                         displayLectures('upcoming');
                     }
                 })
