@@ -448,8 +448,7 @@
 
                             <div class="flex space-x-2">
                                 <a href="/admin/api/lectures/${lecture.id}/attendance" class="flex-1 text-white px-3 py-1 rounded-md text-sm font-medium text-center" style="background: linear-gradient(90deg, #7C3AED, #2563EB);">
-    View Attendance
-</a>
+                                    View Attendance</a>
                                 <button onclick="editLecture(${lecture.id})" class="flex-1 bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-300">
                                     Edit
                                 </button>
