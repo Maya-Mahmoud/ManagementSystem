@@ -1,3 +1,3 @@
-- [ ] Add exportCsv method to PerformanceController
-- [ ] Add Export CSV button to performance.blade.php
-- [ ] Add route for /admin/performance/export-csv
+- [x] Edit routes/api.php to add the API route for halls lectures with proper middleware
+- [x] Edit routes/web.php to remove the conflicting route
+- [ ] Test the Booking Details functionality

@@ -53,7 +53,7 @@ Route::middleware([
     Route::get('/halls', [\App\Http\Controllers\HallBookingController::class, 'index'])->name('halls.index');
     Route::post('/halls/{hall}/book', [\App\Http\Controllers\HallBookingController::class, 'book'])->name('halls.book');
     Route::post('/halls/{hall}/release', [\App\Http\Controllers\HallBookingController::class, 'release'])->name('halls.release');
-    Route::get('/api/halls/{hallId}/lectures', [\App\Http\Controllers\Admin\LectureController::class, 'getLecturesByHall'])->middleware(['auth', 'adminOrProfessor']);
+
 });
 
 // مسارات واجهة المدير (Admin Panel Routes) - محمية بـ AdminMiddleware

@@ -5,7 +5,8 @@
                 <h1 class="text-3xl font-bold text-gray-900">Halls Booking</h1>
                 <p class="mt-2 text-sm text-gray-600">Book or release halls for your classes</p>
                 <br>
-                <h3 style="color: #8A2BE2;">Select the start and end time to view the all hall available at this time:</h3>
+                <h3 style="color: #8A2BE2;">Select the start and end time to view all halls available at this time:</h3>
+
                 <!-- DateTime Filter Form -->
                 <div class="mt-6 bg-white p-4 rounded-lg shadow-md">
                     <form method="GET" action="{{ route('halls.index') }}" class="flex flex-wrap items-end gap-4">
@@ -25,7 +26,7 @@
                             </button>
                             @if(isset($startTime) || isset($endTime))
                                 <a href="{{ route('halls.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">
-                                    view all
+                                    View all
                                 </a>
                             @endif
                         </div>
@@ -64,7 +65,7 @@
                             <div class="space-y-3 mb-4">
                                 <div class="flex items-center text-sm text-gray-600">
                                     <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                     </svg>
                                     Capacity: <span class="font-medium ml-1">{{ $hall->capacity }}</span>
                                 </div>
@@ -81,10 +82,15 @@
                                 @if($hall->isOccupiedAt(now()))
                                     <div class="text-xs text-gray-500 mt-1">
                                         @if($currentLecture)
-                                            Lecture: {{ $currentLecture->title }} ({{ \Carbon\Carbon::parse($currentLecture->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($currentLecture->end_time)->format('H:i') }})
-                                        @elseif($currentBooking)
-                                            Booked by: {{ $currentBooking->user->name }}
-                                        @endif
+    @php
+        $start = \Carbon\Carbon::parse($currentLecture->start_time)->setTimezone('Asia/Damascus')->format('h:i A');
+        $end = \Carbon\Carbon::parse($currentLecture->end_time)->setTimezone('Asia/Damascus')->format('h:i A');
+    @endphp
+    Lecture: {{ $currentLecture->title }} ({{ $start }} - {{ $end }})
+@elseif($currentBooking)
+    Booked by: {{ $currentBooking->user->name }}
+@endif
+
                                     </div>
                                 @endif
 
@@ -137,20 +143,17 @@
                     </button>
                 </div>
 
-                <div id="bookingDetailsContent">
-                    <!-- Filter Buttons -->
-                    <div class="flex justify-center space-x-4 mb-4">
-                        <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
-                            Upcoming
-                        </button>
-                        <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
-                            Completed
-                        </button>
-                    </div>
+                <div class="flex justify-center space-x-4 mb-4">
+                    <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
+                        Upcoming
+                    </button>
+                    <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
+                        Completed
+                    </button>
+                </div>
 
-                    <div id="lecturesContainer">
-                        <!-- Lectures will be displayed here -->
-                    </div>
+                <div id="bookingDetailsContent">
+                    <div id="lecturesContainer"></div>
                 </div>
             </div>
         </div>
@@ -168,150 +171,124 @@
                     showBookingDetails(hallId, hallName);
                 });
             });
+
+            // Add event listeners for filter buttons
+            document.getElementById('upcomingBtn').addEventListener('click', () => displayLectures('upcoming'));
+            document.getElementById('completedBtn').addEventListener('click', () => displayLectures('completed'));
         });
 
         function showBookingDetails(hallId, hallName) {
-            document.getElementById('bookingModalTitle').textContent = `Booking Details - ${hallName}`;
-            const content = document.getElementById('bookingDetailsContent');
+            const modalTitle = document.getElementById('bookingModalTitle');
+            const modal = document.getElementById('bookingDetailsModal');
+            const lecturesContainer = document.getElementById('lecturesContainer');
 
-            // Show loading message
-            content.innerHTML = '<p class="text-center text-gray-500">Loading...</p>';
-            document.getElementById('bookingDetailsModal').classList.remove('hidden');
+            if (!modalTitle || !modal || !lecturesContainer) {
+                console.error('Modal elements not found');
+                return;
+            }
 
-            // Fetch lectures for this hall
-            fetch(`/api/halls/${hallId}/lectures`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            modalTitle.textContent = `Booking Details - ${hallName}`;
+            lecturesContainer.innerHTML = '<p class="text-center text-gray-500">Loading...</p>';
+            modal.classList.remove('hidden');
+
+            fetch(`/admin/api/halls/${hallId}/lectures`)
+                .then(res => res.json())
                 .then(data => {
-                    if (data.success && data.data && data.data.length > 0) {
+                    if (data.success && data.data.length > 0) {
                         currentLectures = data.data;
-                        displayLectures('upcoming'); // Default to upcoming
+                        displayLectures('upcoming');
                     } else {
-                        content.innerHTML = `
-                            <!-- Filter Buttons -->
-                            <div class="flex justify-center space-x-4 mb-4">
-                                <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
-                                    Upcoming
-                                </button>
-                                <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
-                                    Completed
-                                </button>
-                            </div>
-                            <div id="lecturesContainer">
-                                <p class="text-center text-gray-500">No lectures scheduled for this hall</p>
-                            </div>
-                        `;
-                        attachFilterListeners();
+                        currentLectures = [];
+                        displayLectures('upcoming');
                     }
                 })
-                .catch(error => {
-                    console.error('Error fetching lectures:', error);
-                    content.innerHTML = `
-                        <!-- Filter Buttons -->
-                        <div class="flex justify-center space-x-4 mb-4">
-                            <button id="upcomingBtn" class="bg-gradient-to-r from-gray-200 to-slate-300 text-gray-900 px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-slate-500">
-                                Upcoming
-                            </button>
-                            <button id="completedBtn" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:scale-105 hover:shadow-lg transition-all focus:ring-2 focus:ring-teal-500">
-                                    Completed
-                                </button>
-                            </div>
-                            <div id="lecturesContainer">
-                                <p class="text-center text-red-500">Error loading booking details: ${error.message}</p>
-                            </div>
-                    `;
-                    attachFilterListeners();
+                .catch(err => {
+                    console.error(err);
+                    lecturesContainer.innerHTML = `<p class="text-center text-red-500">Error: ${err.message}</p>`;
                 });
         }
 
         function displayLectures(filterType) {
             const container = document.getElementById('lecturesContainer');
-            const filteredLectures = currentLectures.filter(lecture => lecture.status === filterType);
+            if (!container) {
+                console.error('Lectures container not found');
+                return;
+            }
 
-            if (filteredLectures.length > 0) {
-                let html = '<div class="space-y-4">';
-                filteredLectures.forEach(lecture => {
-                    html += `
-                        <div class="bg-white border border-purple-300 rounded-lg p-4 shadow-sm">
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Lecture Title:</label>
-                                <p class="text-sm font-semibold text-gray-900">${lecture.title || 'N/A'}</p>
+            const filtered = currentLectures.filter(l => l.status === filterType);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">No ${filterType} lectures found</p>`;
+                return;
+            }
+
+            let html = '<div class="space-y-4">';
+            filtered.forEach(lecture => {
+                html += `
+                    <div class="bg-white border border-purple-300 rounded-lg p-4 shadow-sm">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Lecture Title:</label>
+                            <p class="text-sm font-semibold text-gray-900">${lecture.title || 'N/A'}</p>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subject:</span>
+                                <span class="font-medium text-gray-900">${lecture.subject || 'N/A'}</span>
                             </div>
-                            <div class="grid grid-cols-1 gap-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Subject:</span>
-                                    <span class="font-medium text-gray-900">${lecture.subject || 'N/A'}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Professor:</span>
-                                    <span class="font-medium text-gray-900">${lecture.professor || 'N/A'}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Start Time:</span>
-                                    <span class="font-medium text-gray-900">${lecture.start_time ? new Date(lecture.start_time).toLocaleString('en-GB') : 'N/A'}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">End Time:</span>
-                                    <span class="font-medium text-gray-900">${lecture.end_time ? new Date(lecture.end_time).toLocaleString('en-GB') : 'N/A'}</span>
-                                </div>
-                                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                                    <span class="text-gray-600">Status:</span>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                        lecture.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                                        lecture.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                                        'bg-gray-100 text-gray-800'
-                                    }">
-                                        ${lecture.status ? lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1) : 'Unknown'}
-                                    </span>
-                                </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Professor:</span>
+                                <span class="font-medium text-gray-900">${lecture.professor || 'N/A'}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Start Time:</span>
+                                <span class="font-medium text-gray-900">
+                                    ${lecture.start_time
+                                        ? new Date(lecture.start_time).toLocaleString('en-US', {
+                                            timeZone: 'Asia/Damascus',
+                                            hour: 'numeric',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })
+                                        : 'N/A'}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">End Time:</span>
+                                <span class="font-medium text-gray-900">
+                                    ${lecture.end_time
+                                        ? new Date(lecture.end_time).toLocaleString('en-US', {
+                                            timeZone: 'Asia/Damascus',
+                                            hour: 'numeric',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })
+                                        : 'N/A'}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                                <span class="text-gray-600">Status:</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    lecture.status === 'ongoing' ? 'bg-green-100 text-green-800' :
+                                    lecture.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-gray-100 text-gray-800'
+                                }">
+                                    ${lecture.status ? lecture.status.charAt(0).toUpperCase() + lecture.status.slice(1) : 'Unknown'}
+                                </span>
                             </div>
                         </div>
-                    `;
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = `<p class="text-center text-gray-500">No ${filterType} lectures found</p>`;
-            }
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
         }
 
-        function attachFilterListeners() {
-            const upcomingBtn = document.getElementById('upcomingBtn');
-            const completedBtn = document.getElementById('completedBtn');
-
-            if (upcomingBtn) {
-                upcomingBtn.addEventListener('click', function() {
-                    displayLectures('upcoming');
-                });
-            }
-
-            if (completedBtn) {
-                completedBtn.addEventListener('click', function() {
-                    displayLectures('completed');
-                });
-            }
-        }
-
-        // Close modal functionality
-        document.getElementById('closeBookingModal').addEventListener('click', function() {
+        document.getElementById('closeBookingModal').addEventListener('click', () => {
             document.getElementById('bookingDetailsModal').classList.add('hidden');
         });
 
-        document.getElementById('bookingDetailsModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('hidden');
-            }
+        document.getElementById('bookingDetailsModal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden');
         });
     </script>
 </x-admin-layout>
