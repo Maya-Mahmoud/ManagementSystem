@@ -172,9 +172,36 @@
                 });
             });
 
-            // Add event listeners for filter buttons
-            document.getElementById('upcomingBtn').addEventListener('click', () => displayLectures('upcoming'));
-            document.getElementById('completedBtn').addEventListener('click', () => displayLectures('completed'));
+            // Add event listeners for filter buttons with null checks
+            const upcomingBtn = document.getElementById('upcomingBtn');
+            const completedBtn = document.getElementById('completedBtn');
+            if (upcomingBtn) {
+                upcomingBtn.addEventListener('click', () => displayLectures('upcoming'));
+            }
+            if (completedBtn) {
+                completedBtn.addEventListener('click', () => displayLectures('completed'));
+            }
+
+            // Add event listener for close button with null check
+            const closeBtn = document.getElementById('closeBookingModal');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    const modal = document.getElementById('bookingDetailsModal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Add event listener for modal background click with null check
+            const modal = document.getElementById('bookingDetailsModal');
+            if (modal) {
+                modal.addEventListener('click', e => {
+                    if (e.target === e.currentTarget) {
+                        e.currentTarget.classList.add('hidden');
+                    }
+                });
+            }
         });
 
         function showBookingDetails(hallId, hallName) {

@@ -90,7 +90,7 @@ Route::middleware([AdminOrProfessorMiddleware::class])
         Route::prefix('api')->name('api.')->group(function () {
             Route::get('lectures', [LectureController::class, 'index'])->name('api.lectures');
             Route::get('available-halls', [LectureController::class, 'getAvailableHalls'])->name('available-halls');
-            Route::get('halls/{hallId}/lectures', [LectureController::class, 'getLecturesByHall'])->name('halls.lectures');
+            Route::withoutMiddleware([AdminOrProfessorMiddleware::class])->middleware(['auth'])->get('halls/{hallId}/lectures', [LectureController::class, 'getLecturesByHall'])->name('halls.lectures');
             Route::apiResource('halls', \App\Http\Controllers\Admin\HallController::class);
             Route::apiResource('lectures', LectureController::class); // إضافة هذا لدعم POST وCRUD الكامل
             Route::apiResource('users', \App\Http\Controllers\Admin\UsersController::class);
@@ -119,6 +119,7 @@ Route::middleware([AdminOrProfessorMiddleware::class])->prefix('professor')->nam
     Route::prefix('api')->name('api.')->group(function () {
         Route::apiResource('lectures', LectureController::class);
         Route::get('lectures-by-date', [LectureController::class, 'lecturesByDate']);
+        Route::get('available-halls', [LectureController::class, 'getAvailableHalls'])->name('available-halls');
     });
 });
 
