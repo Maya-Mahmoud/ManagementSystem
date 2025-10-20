@@ -49,12 +49,12 @@
                     <div class="flex gap-2">
                         {{-- <button type="button" id="filterBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">search</button>
                         <button type="button" id="clearBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600">Clear</button> --}}
-                        <button type="button" id="exportCsvBtn" class="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700" disabled>
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            Export CSV
-                        </button>
+                       <button type="button" id="exportCsvBtn" class="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    </svg>
+    Export CSV
+</button>
                     </div>
                 </form>
             </div>
@@ -155,23 +155,27 @@
                 exportCsvBtn.disabled = !subjectSelect.value;
             });
 
-            filterBtn.addEventListener('click', function() {
-                loadPerformanceData();
-            });
+            if (filterBtn) {
+                filterBtn.addEventListener('click', function() {
+                    loadPerformanceData();
+                });
+            }
 
-            clearBtn.addEventListener('click', function() {
-                yearSelect.value = '';
-                semesterSelect.value = '';
-                departmentSelect.value = '';
-                subjectSelect.innerHTML = '<option value="">All Subjects</option>';
-                performanceData.innerHTML = '<p class="text-gray-600">Select filters to view performance data.</p>';
-                // Reset stats to 0
-                totalStudents.textContent = '0';
-                averageAttendance.textContent = '0%';
-                averageAbsence.textContent = '0%';
-                totalLectures.textContent = '0';
-                exportCsvBtn.disabled = true;
-            });
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    yearSelect.value = '';
+                    semesterSelect.value = '';
+                    departmentSelect.value = '';
+                    subjectSelect.innerHTML = '<option value="">All Subjects</option>';
+                    performanceData.innerHTML = '<p class="text-gray-600">Select filters to view performance data.</p>';
+                    // Reset stats to 0
+                    totalStudents.textContent = '0';
+                    averageAttendance.textContent = '0%';
+                    averageAbsence.textContent = '0%';
+                    totalLectures.textContent = '0';
+                    exportCsvBtn.disabled = true;
+                });
+            }
 
             exportCsvBtn.addEventListener('click', function() {
                 const subjectId = subjectSelect.value;
@@ -179,27 +183,13 @@
                     alert('Please select a subject first.');
                     return;
                 }
-                fetch(`/admin/performance/export-csv?subject_id=${subjectId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to download CSV');
-                        }
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'subject_attendance.csv';
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-                    })
-                    .catch(error => {
-                        console.error('Error downloading CSV:', error);
-                        alert('Error downloading CSV. Please try again.');
-                    });
+                // Create a link to download the CSV
+                const link = document.createElement('a');
+                link.href = `/admin/performance/export-csv?subject_id=${subjectId}`;
+                link.download = 'subject_attendance.csv';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
 
             function loadSubjects() {
