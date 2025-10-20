@@ -290,30 +290,72 @@ public function showAttendance($id)
     public function destroy(string $id)
     {
         $lecture = Lecture::findOrFail($id);
-        $hall = $lecture->hall;
+    $hall = $lecture->hall;
 
-        Log::info("Deleting lecture ID: {$id}");
+    Log::info("Deleting lecture ID: {$id}");
 
-        // Delete associated lecture attendance records first
+    // جلب سجلات الحضور المرتبطة بهذه المحاضرة
+    $attendances = $lecture->lectureAttendances()->get();
+
+    // ----------------------------------------------------
+    // الخطوة الإضافية: تحديث عدادات الغياب في الجدول التجميعي
+    // ----------------------------------------------------
+    
+    // 1. نبدأ بعملية قاعدة بيانات (Transaction) لضمان تنفيذ كل العمليات بنجاح أو فشلها كلها
+    DB::beginTransaction();
+
+    try {
+        $subjectId = $lecture->subject_id;
+
+        // 2. نمر على كل سجل حضور
+        foreach ($attendances as $attendance) {
+            // 3. إذا كان الطالب مسجلًا كـ 'غياب'
+            if ($attendance->status === 'absent') {
+                // 4. نجد سجل العداد التجميعي للطالب في هذه المادة
+                $summaryRecord = StudentSubjectAttendance::where('student_id', $attendance->student_id)
+                    ->where('subject_id', $subjectId)
+                    ->first();
+                
+                // 5. نتحقق ونخفض العداد
+                if ($summaryRecord) {
+                    // نستخدم decrement لضمان تخفيض القيمة بأمان
+                    $summaryRecord->decrement('absence_count'); 
+                    Log::info("Decremented absence_count for student {$attendance->student_id} in subject {$subjectId}");
+                }
+            }
+        }
+        
+        // 6. حذف سجلات الحضور الفردية للمحاضرة (كما كان لديك)
         $lectureAttendancesCount = $lecture->lectureAttendances()->count();
-        $lecture->lectureAttendances()->delete();
+        $lecture->lectureAttendances()->delete(); 
         Log::info("Deleted {$lectureAttendancesCount} lecture attendance records for lecture ID: {$id}");
 
-        // Note: Student subject attendance records are kept to preserve attendance history
-
-        // Then delete the lecture
+        // 7. ثم حذف المحاضرة نفسها
         $lecture->delete();
         Log::info("Lecture ID: {$id} deleted successfully");
 
-        // Update hall status after deleting lecture
+        // 8. تحديث حالة القاعة
         if ($hall) {
             $hall->updateStatusBasedOnLectures();
         }
 
+        DB::commit(); // تأكيد كل العمليات
+
         return response()->json([
             'success' => true,
-            'message' => 'Lecture and its attendance records deleted successfully!'
+            'message' => 'Lecture and its attendance records deleted successfully and counters updated!'
         ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack(); // التراجع عن كل العمليات في حال حدوث خطأ
+        Log::error("Error during lecture deletion and counter update for ID: {$id}. Error: " . $e->getMessage());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete lecture due to a server error.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
     }
 
 
