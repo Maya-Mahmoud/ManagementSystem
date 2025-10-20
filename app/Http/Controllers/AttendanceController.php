@@ -45,10 +45,10 @@ class AttendanceController extends Controller
 
         // Check eligibility: same department, year, semester (allow null student semester for any)
         $subject = Subject::find($lecture->subject_id);
-        if (!$subject || 
+        if (!$subject ||
             $student->department_id !== $lecture->department_id ||
             strtolower($student->year) !== strtolower($subject->year) ||
-            ($student->semester !== null && strtolower($student->semester) !== strtolower($subject->semester))) {
+            ($student->semester !== null && $subject->semester !== null && strtolower($student->semester) !== strtolower($subject->semester))) {
             return response()->json([
                 'success' => false,
                 'message' => 'You are not eligible for this lecture.',

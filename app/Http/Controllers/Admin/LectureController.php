@@ -17,8 +17,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
 class LectureController extends Controller
-{
-    public function index(Request $request)
+{ public function index(Request $request)
     {
         if ($request->expectsJson()) {
             $query = Lecture::with(['hall', 'user', 'subject']);
@@ -34,33 +33,13 @@ class LectureController extends Controller
         return view('admin.lecture-management', compact('halls', 'subjects', 'departments'));
     }
 
+
+
     public function getAvailableHalls(Request $request)
     {
-        $startTime = $request->query('start_time');
-        $endTime = $request->query('end_time');
-
-        if (!$startTime || !$endTime) {
-            return response()->json(['error' => 'Start time and end time are required'], 400);
-        }
-
-        $start = \Carbon\Carbon::parse($startTime);
-        $end = \Carbon\Carbon::parse($endTime);
-
-        // Get halls that are not occupied during the requested time
-        $occupiedHallIds = Hall::whereHas('lectures', function ($query) use ($start, $end) {
-            $query->where(function ($q) use ($start, $end) {
-                $q->where('start_time', '<', $end)
-                  ->where('end_time', '>', $start);
-            });
-        })->orWhereHas('bookings', function ($query) use ($start, $end) {
-            $query->where('status', 'booked')
-                  ->where('booked_at', '<', $end)
-                  ->where('end_time', '>', $start);
-        })->pluck('id');
-
-        $availableHalls = Hall::whereNotIn('id', $occupiedHallIds)->get(['id', 'hall_name']);
-
-        return response()->json($availableHalls);
+        // Always return all halls for the dropdown, validation happens on submit
+        $halls = Hall::all(['id', 'hall_name']);
+        return response()->json($halls);
     }
 
     public function getLecturesByHall(Request $request, $hallId)
@@ -118,6 +97,11 @@ class LectureController extends Controller
     public function store(Request $request)
     {
         try {
+            // Manual check to ensure start_time is before end_time
+            if (strtotime($request->start_time) >= strtotime($request->end_time)) {
+                return response()->json(['success' => false, 'message' => 'Start time must be before end time.'], 400);
+            }
+
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'subject_id' => 'required|exists:subjects,id',
@@ -145,9 +129,8 @@ class LectureController extends Controller
 
             $overlappingBookings = $hall->bookings()
                 ->where('status', 'booked')
-                ->whereNotNull('end_time')
                 ->where('booked_at', '<', $validated['end_time'])
-                ->where('end_time', '>', $validated['start_time'])
+                ->where('booked_at', '>', $validated['start_time'])
                 ->exists();
 
             if ($overlappingLectures || $overlappingBookings) {
@@ -163,6 +146,7 @@ class LectureController extends Controller
 
             // Set both subject and subject_id
             $validated['subject'] = $subject->name;
+            $validated['department_id'] = $subject->department_id;
 
             $validated['professor'] = Auth::user()->name;
             $validated['user_id'] = Auth::id();
@@ -186,6 +170,7 @@ class LectureController extends Controller
                         'title' => $validated['title'],
                         'subject' => $validated['subject'],
                         'subject_id' => $validated['subject_id'],
+                        'department_id' => $validated['department_id'],
                         'professor' => $validated['professor'],
                         'hall_id' => $validated['hall_id'],
                         'start_time' => $start,
@@ -209,7 +194,7 @@ class LectureController extends Controller
             // Update hall status after creating lecture
             $hall->updateStatusBasedOnLectures();
 
-            return response()->json(['success' => true, 'message' => 'Lecture created successfully!', 'data' => $lecture->load(['hall', 'user'])], 201);
+            return response()->json(['success' => true, 'message' => 'Lecture created successfully!', 'data' => $lecture->load(['hall', 'user', 'subject'])], 201);
         } catch (\Exception $e) {
             Log::error('Error storing lecture: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to schedule lecture due to server error.', 'error' => $e->getMessage()], 500);
@@ -280,6 +265,12 @@ public function showAttendance($id)
     public function update(Request $request, string $id)
     {
         $lecture = Lecture::findOrFail($id);
+
+        // Manual check to ensure start_time is before end_time
+        if (strtotime($request->start_time) >= strtotime($request->end_time)) {
+            return response()->json(['success' => false, 'message' => 'Start time must be before end time.'], 400);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
@@ -303,15 +294,12 @@ public function showAttendance($id)
 
         Log::info("Deleting lecture ID: {$id}");
 
-        // Delete associated attendance records first
-        $lectureAttendancesCount = $lecture->attendances()->count();
-        $lecture->attendances()->delete();
+        // Delete associated lecture attendance records first
+        $lectureAttendancesCount = $lecture->lectureAttendances()->count();
+        $lecture->lectureAttendances()->delete();
         Log::info("Deleted {$lectureAttendancesCount} lecture attendance records for lecture ID: {$id}");
 
-        // Delete associated student subject attendance records
-        $studentSubjectAttendancesCount = StudentSubjectAttendance::where('lecture_id', $id)->count();
-        StudentSubjectAttendance::where('lecture_id', $id)->delete();
-        Log::info("Deleted {$studentSubjectAttendancesCount} student subject attendance records for lecture ID: {$id}");
+        // Note: Student subject attendance records are kept to preserve attendance history
 
         // Then delete the lecture
         $lecture->delete();

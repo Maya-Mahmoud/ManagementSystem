@@ -28,6 +28,23 @@ class Lecture extends Model
         'end_time' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($lecture) {
+            if ($lecture->start_time >= $lecture->end_time) {
+                throw new \InvalidArgumentException('The end time field must be a date after start time.');
+            }
+        });
+
+        static::updating(function ($lecture) {
+            if ($lecture->start_time >= $lecture->end_time) {
+                throw new \InvalidArgumentException('The end time field must be a date after start time.');
+            }
+        });
+    }
+
     public function hall()
     {
         return $this->belongsTo(Hall::class);
@@ -49,10 +66,15 @@ class Lecture extends Model
     }
 
     
-    public function attendances()
-{
-    return $this->hasMany(StudentSubjectAttendance::class, 'lecture_id');
-}
+    public function lectureAttendances()
+    {
+        return $this->hasMany(LectureAttendance::class);
+    }
+
+    public function studentSubjectAttendances()
+    {
+        return $this->hasMany(StudentSubjectAttendance::class, 'lecture_id');
+    }
 
     /**
      * Check if this lecture overlaps with another lecture or booking.

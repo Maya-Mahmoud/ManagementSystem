@@ -310,13 +310,14 @@
                 const endTime = document.getElementById('lectureEndTime').value;
                 const hallSelect = document.getElementById('lectureHall');
 
-                if (!startTime || !endTime) {
-                    hallSelect.innerHTML = '<option value="">Select a hall</option>';
-                    return;
-                }
-
+                // Always try to load halls, even if no times are selected
                 try {
-                    const response = await fetch(`${apiBaseUrl}/available-halls?start_time=${encodeURIComponent(startTime)}&end_time=${encodeURIComponent(endTime)}`, {
+                    let url = `${apiBaseUrl}/available-halls`;
+                    if (startTime && endTime) {
+                        url += `?start_time=${encodeURIComponent(startTime)}&end_time=${encodeURIComponent(endTime)}`;
+                    }
+
+                    const response = await fetch(url, {
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -334,12 +335,19 @@
                     });
                 } catch (error) {
                     console.error('Error loading available halls:', error);
+                    // Fallback: show error message
+                    hallSelect.innerHTML = '<option value="">Error loading halls</option>';
                 }
             }
 
             // Add event listeners for time inputs
             document.getElementById('lectureStartTime').addEventListener('change', loadAvailableHalls);
             document.getElementById('lectureEndTime').addEventListener('change', loadAvailableHalls);
+
+            // Load halls initially when modal opens
+            addLectureBtn.addEventListener('click', function() {
+                loadAvailableHalls();
+            });
 
             // معالجة إرسال النموذج
             addLectureForm.addEventListener('submit', async function(e) {
@@ -403,10 +411,14 @@
                     const startTime = new Date(lecture.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     const endTime = new Date(lecture.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
+                    const subjectName = lecture.subject && lecture.subject.name ? lecture.subject.name : 'N/A';
+                    const userName = lecture.user && lecture.user.name ? lecture.user.name : 'N/A';
+                    const hallName = lecture.hall && lecture.hall.hall_name ? lecture.hall.hall_name : 'N/A';
+
                     return `
                         <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-900"> ${lecture.subject.name} / ${lecture.title}</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">${subjectName} / ${lecture.title}</h3>
                                 <div class="flex items-center space-x-2">
                                     <button onclick="editLecture(${lecture.id})" class="text-purple-600 hover:text-purple-900 text-xs font-medium transition-colors duration-200">
                                         Edit
@@ -421,7 +433,7 @@
 
                             <div class="space-y-3 mb-4">
                                 <div class="flex items-center text-sm text-gray-600">
-                                    <span class="font-medium text-purple-600">by ${lecture.user.name}</span>
+                                    <span class="font-medium text-purple-600">by ${userName}</span>
                                 </div>
 
                                 <div class="flex items-center text-sm text-gray-600">
@@ -442,7 +454,7 @@
                                     <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                     </svg>
-                                    Hall: <span class="font-medium ml-1">${lecture.hall.hall_name}</span>
+                                    Hall: <span class="font-medium ml-1">${hallName}</span>
                                 </div>
                             </div>
 

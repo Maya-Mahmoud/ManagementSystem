@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
          Schema::table('student_subject_attendances', function (Blueprint $table) {
-            // Skip drop foreign key since it's already handled manually
+            // Drop the existing foreign key to avoid duplicate key error
+            $table->dropForeign(['lecture_id']);
 
             // نعدل العمود ليصير NOT NULL (إذا بتحبي تربطي كل سجل بمحاضرة)
             $table->unsignedBigInteger('lecture_id')->nullable(false)->change();

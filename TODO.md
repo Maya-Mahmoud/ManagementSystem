@@ -1,3 +1,1 @@
-- [x] Edit routes/api.php to add the API route for halls lectures with proper middleware
-- [x] Edit routes/web.php to remove the conflicting route
-- [ ] Test the Booking Details functionality
+- Add boot method in Lecture model to validate start_time < end_time on creating and updating events.
