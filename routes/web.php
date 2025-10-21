@@ -136,6 +136,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentProfileController;
 
 Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.')->group(function () {
     Route::get('dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
@@ -143,4 +144,9 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.
     Route::get('scan-qr', [StudentDashboardController::class, 'scanQr'])->name('scan-qr');
     Route::post('scan-qr', [AttendanceController::class, 'scanQr'])->name('scan-qr.scan');
     Route::get('attendance', [StudentDashboardController::class, 'attendance'])->name('attendance');
+
+    // Profile routes
+    Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');
+    Route::get('profile/edit', [StudentProfileController::class, 'edit'])->name('edit-profile');
+    Route::put('profile', [StudentProfileController::class, 'update'])->name('update-profile');
 });

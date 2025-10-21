@@ -1,1 +1,2 @@
 - Add boot method in Lecture model to validate start_time < end_time on creating and updating events.
+- Fix student profile image upload and display issue: Ensure uploaded images are saved and displayed correctly in profile.blade.php and edit-profile.blade.php.

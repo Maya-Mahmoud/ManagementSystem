@@ -36,6 +36,7 @@ class User extends Authenticatable
         'role',
         'status',
         'department_id',
+        'phone',
         'created_at',
     ];
     /**
@@ -79,6 +80,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo_path ? request()->getSchemeAndHttpHost() . '/storage/' . $this->profile_photo_path : null;
     }
 
     public function department()
