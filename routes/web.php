@@ -75,6 +75,10 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     Route::get('/', function () {
         return view('admin.dashboard');
     });
+
+    // Profile routes
+    Route::get('profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'show'])->name('profile');
+    Route::put('profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('profile.update');
 });
 
 // مسارات مشتركة بين المدير والبروفيسور (مثل الـ API الذي تحتاجه القائمة المنسدلة) - محمية بـ AdminOrProfessorMiddleware
@@ -105,6 +109,9 @@ Route::middleware([AdminOrProfessorMiddleware::class])
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');
         Route::get('performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('performance');
         Route::get('performance/export-csv', [\App\Http\Controllers\Admin\PerformanceController::class, 'exportCsv'])->name('performance.export-csv');
+         // Profile routes
+    Route::get('profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'show'])->name('profile');
+    Route::put('profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('profile.update');
 
     });
 
