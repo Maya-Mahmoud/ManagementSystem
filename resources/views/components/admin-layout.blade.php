@@ -42,18 +42,18 @@
                         <!-- Right side -->
                         <div class="flex items-center space-x-4">
 
-                            <!-- Notification Icon Updated -->
-                            <div class="flex items-center bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
+                            <!-- Notification Icon -->
+                            <a href="{{ route('notifications.index') }}" class="flex items-center bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs hover:bg-red-200 transition-colors">
                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 
-                                        6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 
-                                        6.165 6 8.388 6 11v3.159c0 .538-.214 
-                                        1.055-.595 1.436L4 17h5m6 0a3 3 0 
+                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002
+                                        6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67
+                                        6.165 6 8.388 6 11v3.159c0 .538-.214
+                                        1.055-.595 1.436L4 17h5m6 0a3 3 0
                                         11-6 0h6z"/>
                                 </svg>
-                                2
-                            </div>
+                                <span id="notification-count">0</span>
+                            </a>
 
                             <!-- Profile -->
                             <div class="flex items-center bg-gray-100 px-2 py-1 rounded text-xs">
@@ -153,5 +153,7 @@
             </main>
 
         </div>
+
+
     </body>
 </html>

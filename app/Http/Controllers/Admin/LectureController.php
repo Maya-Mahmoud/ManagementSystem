@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Department;
 use App\Models\StudentSubjectAttendance;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -190,6 +191,9 @@ class LectureController extends Controller
             $lecture = Lecture::create($validated);
             $lecture->qr_code = Str::uuid();
             $lecture->save();
+
+            // Send notifications
+            $this->sendLectureNotifications($lecture);
 
             // Update hall status after creating lecture
             $hall->updateStatusBasedOnLectures();
@@ -389,5 +393,29 @@ public function showAttendance($id)
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function sendLectureNotifications(Lecture $lecture)
+    {
+        // Notify students in the same department
+        $students = User::where('role', 'student')
+            ->where('department_id', $lecture->department_id)
+            ->get();
+
+        foreach ($students as $student) {
+            $student->notify(new \App\Notifications\LectureCreated($lecture));
+        }
+
+        // Notify admin
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\LectureCreated($lecture));
+        }
+
+        // Schedule reminder for professor (30 minutes before)
+        $reminderTime = $lecture->start_time->copy()->subMinutes(30);
+        if ($reminderTime->isFuture()) {
+            \App\Jobs\SendLectureReminders::dispatch()->delay($reminderTime);
+        }
     }
 }

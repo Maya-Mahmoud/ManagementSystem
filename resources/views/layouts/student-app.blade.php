@@ -47,18 +47,18 @@
 
                 <!-- Right side -->
                 <div class="flex items-center space-x-4">
-                    <!-- Notification Icon Updated -->
-                            <div class="flex items-center bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 
-                                        6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 
-                                        6.165 6 8.388 6 11v3.159c0 .538-.214 
-                                        1.055-.595 1.436L4 17h5m6 0a3 3 0 
-                                        11-6 0h6z"/>
-                                </svg>
-                                2
-                            </div>
+                    <!-- Notification Icon -->
+                    <a href="{{ route('notifications.index') }}" class="flex items-center bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs hover:bg-red-200 transition-colors">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002
+                                6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67
+                                6.165 6 8.388 6 11v3.159c0 .538-.214
+                                1.055-.595 1.436L4 17h5m6 0a3 3 0
+                                11-6 0h6z"/>
+                        </svg>
+                        <span id="notification-count">0</span>
+                    </a>
 
                     <!-- Profile Button -->
                     <div class="flex items-center">
@@ -116,6 +116,121 @@
         @yield('content')
     </main>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationCount = document.getElementById('notification-count');
+        const notificationList = document.getElementById('notification-list');
+
+        // Toggle dropdown
+        notificationBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!notificationDropdown.contains(e.target) && !notificationBtn.contains(e.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+
+        let isLoading = false;
+
+        // Load notifications
+        function loadNotifications() {
+            if (isLoading) return;
+            isLoading = true;
+
+            fetch('/notifications/unread-count')
+                .then(response => response.json())
+                .then(data => {
+                    notificationCount.textContent = data.count;
+                    if (data.count > 0) {
+                        notificationBtn.classList.add('bg-red-500', 'text-white');
+                        notificationBtn.classList.remove('bg-red-100', 'text-red-800');
+                    } else {
+                        notificationBtn.classList.remove('bg-red-500', 'text-white');
+                        notificationBtn.classList.add('bg-red-100', 'text-red-800');
+                    }
+                });
+
+            // Load only unread notifications
+            fetch('/notifications?unread_only=true')
+                .then(response => response.json())
+                .then(data => {
+                    notificationList.innerHTML = '';
+
+                    if (data.data && data.data.length === 0) {
+                        notificationList.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No new notifications</div>';
+                    } else if (data.data) {
+                        data.data.forEach(notification => {
+                            const item = document.createElement('div');
+                            item.className = 'px-4 py-2 border-b border-gray-100 hover:bg-gray-50 cursor-pointer bg-blue-50';
+                            item.innerHTML = `
+                                <div class="text-sm text-gray-900">${notification.data.message}</div>
+                                <div class="text-xs text-gray-500 mt-1">${new Date(notification.created_at).toLocaleDateString()}</div>
+                            `;
+                            item.addEventListener('click', function() {
+                                fetch(`/notifications/${notification.id}/mark-as-read`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).then(() => {
+                                    loadNotifications();
+                                });
+                            });
+                            notificationList.appendChild(item);
+                        });
+
+                        // Mark all visible notifications as read when dropdown is opened
+                        markAllVisibleAsRead(data.data);
+                    }
+                    isLoading = false;
+                })
+                .catch(() => {
+                    isLoading = false;
+                });
+        }
+
+        // Mark all visible notifications as read
+        function markAllVisibleAsRead(notifications) {
+            const unreadIds = notifications.filter(n => !n.read_at).map(n => n.id);
+            if (unreadIds.length > 0) {
+                fetch('/notifications/mark-multiple-read', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: unreadIds })
+                }).then(() => {
+                    // Update the count after marking as read
+                    fetch('/notifications/unread-count')
+                        .then(response => response.json())
+                        .then(data => {
+                            notificationCount.textContent = data.count;
+                            if (data.count === 0) {
+                                notificationBtn.classList.remove('bg-red-500', 'text-white');
+                                notificationBtn.classList.add('bg-red-100', 'text-red-800');
+                            }
+                        });
+                });
+            }
+        }
+
+        // Load notifications on page load
+        loadNotifications();
+
+        // Refresh notifications every 30 seconds
+        setInterval(loadNotifications, 30000);
+    });
+</script>
+
 @livewireScripts
 </body>
 </html>

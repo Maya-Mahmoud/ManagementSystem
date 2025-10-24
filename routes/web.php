@@ -157,3 +157,12 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.
     Route::get('profile/edit', [StudentProfileController::class, 'edit'])->name('edit-profile');
     Route::put('profile', [StudentProfileController::class, 'update'])->name('update-profile');
 });
+
+// Notification routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{id}/mark-as-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('/notifications/mark-all-as-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+    Route::post('/notifications/mark-multiple-read', [\App\Http\Controllers\NotificationController::class, 'markMultipleRead'])->name('notifications.mark-multiple-read');
+});
