@@ -451,6 +451,12 @@ public function showAttendance($id)
             $admin->notify(new \App\Notifications\LectureCreated($lecture));
         }
 
+        // Schedule reminder for students (24 hours before)
+        $studentReminderTime = $lecture->start_time->copy()->subHours(24);
+        if ($studentReminderTime->isFuture()) {
+            \App\Jobs\SendStudentLectureReminder::dispatch($lecture)->delay($studentReminderTime);
+        }
+
         // Schedule reminder for professor (30 minutes before)
         $reminderTime = $lecture->start_time->copy()->subMinutes(30);
         if ($reminderTime->isFuture()) {
