@@ -38,8 +38,27 @@ class LectureController extends Controller
 
     public function getAvailableHalls(Request $request)
     {
-        // Always return all halls for the dropdown, validation happens on submit
-        $halls = Hall::all(['id', 'hall_name']);
+        $startTime = $request->query('start_time');
+        $endTime = $request->query('end_time');
+
+        if (!$startTime || !$endTime) {
+            // If no time parameters, return all halls (fallback)
+            $halls = Hall::all(['id', 'hall_name']);
+            return response()->json($halls);
+        }
+
+        // Get halls that do not have overlapping lectures or bookings
+        $halls = Hall::whereDoesntHave('lectures', function ($query) use ($startTime, $endTime) {
+            $query->where('start_time', '<', $endTime)
+                  ->where('end_time', '>', $startTime);
+        })
+        ->whereDoesntHave('bookings', function ($query) use ($startTime, $endTime) {
+            $query->where('status', 'booked')
+                  ->where('booked_at', '<', $endTime)
+                  ->where('booked_at', '>', $startTime);
+        })
+        ->get(['id', 'hall_name']);
+
         return response()->json($halls);
     }
 
@@ -184,6 +203,16 @@ class LectureController extends Controller
                     ];
                 }
                 Lecture::insert($lectures);
+
+                // Send notifications for each recurring lecture
+                $createdLectures = Lecture::where('user_id', $validated['user_id'])
+                    ->where('subject_id', $validated['subject_id'])
+                    ->whereBetween('start_time', [$startDate, $endDate])
+                    ->get();
+
+                foreach ($createdLectures as $lecture) {
+                    $this->sendLectureNotifications($lecture);
+                }
 
                 return response()->json(['success' => true, 'message' => 'Recurring lectures created successfully!'], 201);
             }
@@ -397,9 +426,19 @@ public function showAttendance($id)
 
     private function sendLectureNotifications(Lecture $lecture)
     {
-        // Notify students in the same department
+        // Notify students in the same department AND year about the new lecture
+        // First, get the subject to determine the year
+        $subject = Subject::find($lecture->subject_id);
+        if (!$subject) {
+            \Illuminate\Support\Facades\Log::warning('Lecture has no subject associated', ['lecture_id' => $lecture->id]);
+            return;
+        }
+
         $students = User::where('role', 'student')
             ->where('department_id', $lecture->department_id)
+            ->whereHas('student', function ($query) use ($subject) {
+                $query->where('year', $subject->year);
+            })
             ->get();
 
         foreach ($students as $student) {
@@ -415,7 +454,13 @@ public function showAttendance($id)
         // Schedule reminder for professor (30 minutes before)
         $reminderTime = $lecture->start_time->copy()->subMinutes(30);
         if ($reminderTime->isFuture()) {
-            \App\Jobs\SendLectureReminders::dispatch()->delay($reminderTime);
+            \App\Jobs\SendProfessorLectureReminder::dispatch($lecture)->delay($reminderTime);
+        }
+
+        // Schedule lecture started notifications (when lecture starts)
+        $startTime = $lecture->start_time;
+        if ($startTime->isFuture()) {
+            \App\Jobs\SendLectureStartedNotifications::dispatch($lecture)->delay($startTime);
         }
     }
 }

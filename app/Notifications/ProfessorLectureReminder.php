@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Lecture;
 
-class LectureCreated extends Notification implements ShouldQueue
+class ProfessorLectureReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -24,8 +24,6 @@ class LectureCreated extends Notification implements ShouldQueue
 
     /**
      * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
@@ -38,16 +36,14 @@ class LectureCreated extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New Lecture Scheduled')
-            ->line('A new lecture has been scheduled.')
-            ->action('View Lecture', url('/lectures'))
+            ->subject('Lecture Reminder - ' . $this->lecture->title)
+            ->line('Your lecture is starting in 30 minutes!')
+            ->action('View Lecture', url('/admin/lecture-management'))
             ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {
@@ -56,34 +52,25 @@ class LectureCreated extends Notification implements ShouldQueue
         
         if (!$lecture) {
             return [
-                'title' => 'Lecture Notification',
-                'message' => 'A lecture has been scheduled',
-                'type' => 'info',
+                'title' => 'Lecture Reminder',
+                'message' => 'You have a lecture coming up',
+                'type' => 'warning',
             ];
         }
         
-        // Handle subject - it might be a string or an object
-        if (is_object($lecture->subject)) {
-            $subjectName = $lecture->subject->name ?? 'Unknown Subject';
-        } else {
-            $subjectName = $lecture->subject ?? 'Unknown Subject';
-        }
-        
+        $subjectName = $lecture->subject?->name ?? ($lecture->subject ?? 'Unknown Subject');
         $hallName = $lecture->hall?->hall_name ?? 'Unknown Hall';
-        $professorName = $lecture->user?->name ?? 'Unknown Professor';
         
         return [
-            'title' => 'New Lecture: ' . $subjectName,
-            'message' => "A new lecture '{$lecture->title}' has been scheduled on {$lecture->start_time->format('l, F j')} at {$lecture->start_time->format('g:i A')} in {$hallName}.",
-            'type' => 'info',
+            'title' => 'Lecture Reminder',
+            'message' => "You have a lecture in 30 minutes - {$lecture->title} in {$hallName}.",
+            'type' => 'warning',
             'lecture_id' => $lecture->id,
             'subject' => $subjectName,
-            'subject_id' => $lecture->subject_id,
             'start_time' => $lecture->start_time->format('Y-m-d H:i'),
-            'end_time' => $lecture->end_time->format('Y-m-d H:i'),
             'hall' => $hallName,
             'hall_id' => $lecture->hall_id,
-            'professor' => $professorName,
+            'professor' => $lecture->user?->name ?? 'Unknown Professor',
         ];
     }
 }

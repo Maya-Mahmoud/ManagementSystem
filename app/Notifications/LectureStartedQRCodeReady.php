@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Lecture;
 
-class LectureCreated extends Notification implements ShouldQueue
+class LectureStartedQRCodeReady extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -24,8 +24,6 @@ class LectureCreated extends Notification implements ShouldQueue
 
     /**
      * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
@@ -38,16 +36,15 @@ class LectureCreated extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New Lecture Scheduled')
-            ->line('A new lecture has been scheduled.')
-            ->action('View Lecture', url('/lectures'))
+            ->subject('Lecture Started - QR Code Ready')
+            ->line('Your lecture has started!')
+            ->line('You can now generate the QR code to start taking attendance.')
+            ->action('Generate QR Code', url('/admin/lecture-management'))
             ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {
@@ -56,34 +53,26 @@ class LectureCreated extends Notification implements ShouldQueue
         
         if (!$lecture) {
             return [
-                'title' => 'Lecture Notification',
-                'message' => 'A lecture has been scheduled',
-                'type' => 'info',
+                'title' => 'You can now generate the QR code',
+                'message' => 'Your lecture has started',
+                'type' => 'success',
             ];
         }
         
-        // Handle subject - it might be a string or an object
-        if (is_object($lecture->subject)) {
-            $subjectName = $lecture->subject->name ?? 'Unknown Subject';
-        } else {
-            $subjectName = $lecture->subject ?? 'Unknown Subject';
-        }
-        
+        $subjectName = $lecture->subject?->name ?? ($lecture->subject ?? 'Unknown Subject');
         $hallName = $lecture->hall?->hall_name ?? 'Unknown Hall';
-        $professorName = $lecture->user?->name ?? 'Unknown Professor';
         
         return [
-            'title' => 'New Lecture: ' . $subjectName,
-            'message' => "A new lecture '{$lecture->title}' has been scheduled on {$lecture->start_time->format('l, F j')} at {$lecture->start_time->format('g:i A')} in {$hallName}.",
-            'type' => 'info',
+            'title' => 'You can now generate the QR code',
+            'message' => "Your lecture '{$lecture->title}' has started! You can now generate the QR code to start taking attendance.",
+            'type' => 'success',
             'lecture_id' => $lecture->id,
             'subject' => $subjectName,
-            'subject_id' => $lecture->subject_id,
             'start_time' => $lecture->start_time->format('Y-m-d H:i'),
-            'end_time' => $lecture->end_time->format('Y-m-d H:i'),
             'hall' => $hallName,
             'hall_id' => $lecture->hall_id,
-            'professor' => $professorName,
+            'professor' => $lecture->user?->name ?? 'Unknown Professor',
+            'qr_code' => $lecture->qr_code,
         ];
     }
 }

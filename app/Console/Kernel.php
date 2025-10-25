@@ -22,6 +22,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:update-hall-statuses')->everyFiveMinutes();
+        
+        // Schedule a job to check and send reminders every minute
+        $schedule->job(new \App\Jobs\SendLectureReminders())->everyMinute();
     }
 
     /**

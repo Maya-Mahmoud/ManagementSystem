@@ -35,8 +35,8 @@ class SendLectureReminders implements ShouldQueue
             ->get();
 
         foreach ($lectures as $lecture) {
-            // Send reminder to the professor
-            $lecture->user->notify(new LectureReminder($lecture));
+            // Send reminder to the professor using the new ProfessorLectureReminder
+            SendProfessorLectureReminder::dispatch($lecture);
         }
     }
 }
