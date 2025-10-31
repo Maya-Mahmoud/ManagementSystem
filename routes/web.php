@@ -109,6 +109,9 @@ Route::middleware([AdminOrProfessorMiddleware::class])
         Route::get('advanced-scheduler', [LectureController::class, 'advancedScheduler'])->name('advanced-scheduler');
         Route::get('performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('performance');
         Route::get('performance/export-csv', [\App\Http\Controllers\Admin\PerformanceController::class, 'exportCsv'])->name('performance.export-csv');
+        Route::get('absence/alerts', [\App\Http\Controllers\Admin\AbsenceAlertController::class, 'index'])->name('absence.alerts');
+        Route::post('absence/alerts/send/{studentId}', [\App\Http\Controllers\Admin\AbsenceAlertController::class, 'sendAlert'])->name('absence.alerts.send');
+        Route::post('absence/alerts/send-all', [\App\Http\Controllers\Admin\AbsenceAlertController::class, 'sendAlertsToAll'])->name('absence.alerts.send-all');
          // Profile routes
     Route::get('profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'show'])->name('profile');
     Route::put('profile', [App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('profile.update');
