@@ -109,9 +109,10 @@ class LectureController extends Controller
     public function advancedScheduler()
     {
         $halls = Hall::all();
-         $subjects = Subject::all();
+        $subjects = Subject::all();
         $departments = \App\Models\Department::all();
-        return view('admin.advanced-scheduler', compact('halls','subjects', 'departments'));
+        $professors = User::where('role', 'professor')->get();
+        return view('admin.advanced-scheduler', compact('halls','subjects', 'departments', 'professors'));
     }
 
     public function store(Request $request)
@@ -125,6 +126,7 @@ class LectureController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'subject_id' => 'required|exists:subjects,id',
+                'professor_id' => 'required|exists:users,id',
                 'hall_id' => 'required|exists:halls,id',
                 'start_time' => 'required|date',
                 'end_time' => 'required|date|after:start_time',
@@ -168,8 +170,9 @@ class LectureController extends Controller
             $validated['subject'] = $subject->name;
             $validated['department_id'] = $subject->department_id;
 
-            $validated['professor'] = Auth::user()->name;
-            $validated['user_id'] = Auth::id();
+            $professor = User::find($validated['professor_id']);
+            $validated['professor'] = $professor->name;
+            $validated['user_id'] = $professor->id;
 
             // Handle recurring lectures
             if (!empty($validated['recurringLecture']) && $validated['recurringLecture']) {

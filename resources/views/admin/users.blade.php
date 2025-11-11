@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <!-- Search and Filters - مطابق للصورة -->
+       
         <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div class="flex flex-col sm:flex-row gap-4 flex-1">
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <!-- Users Table - مطابق للصورة -->
+       
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">

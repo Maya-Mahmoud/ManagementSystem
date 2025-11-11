@@ -70,8 +70,13 @@
                         <input type="text" id="title" name="title" required class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
                     </div>
                     <div>
-                        <label for="professor" class="block text-sm font-medium text-gray-700">Professor</label>
-                        <input type="text" id="professor" name="professor" required class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
+                        <label for="professor_id" class="block text-sm font-medium text-gray-700">Professor</label>
+                        <select id="professor_id" name="professor_id" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-h-40 overflow-y-auto">
+                            <option value="">Select Professor</option>
+                            @foreach($professors as $professor)
+                                <option value="{{ $professor->id }}">{{ $professor->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label for="hall_id" class="block text-sm font-medium text-gray-700">Hall</label>
