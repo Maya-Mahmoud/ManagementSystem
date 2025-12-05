@@ -7,7 +7,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                 </div>
-                <h1 class="text-purple-600 font-bold text-2xl">Hall Manager</h1>
+                <h1 class="text-purple-600 font-bold text-2xl">University Smart System</h1>
                 <p class="text-gray-500 text-sm">College Management System</p>
             </div>
         </x-slot>

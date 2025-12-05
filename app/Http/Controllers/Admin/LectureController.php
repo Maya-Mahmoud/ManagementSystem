@@ -31,7 +31,8 @@ class LectureController extends Controller
         $halls = Hall::all();
         $subjects = Subject::all();
         $departments = \App\Models\Department::all();
-        return view('admin.lecture-management', compact('halls', 'subjects', 'departments'));
+        $professors = User::where('role', 'professor')->get();
+        return view('admin.lecture-management', compact('halls', 'subjects', 'departments', 'professors'));
     }
 
 

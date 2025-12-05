@@ -45,6 +45,7 @@ class AbsenceAlertController extends Controller
             })
             ->sortByDesc('absence_percentage');
 
+        
         // Group by student for summary
         $studentsWithAlerts = $allRecords->groupBy('student_id')->map(function ($studentAlerts) {
             $firstAlert = $studentAlerts->first();
