@@ -61,3 +61,4 @@ class SendLectureStartedNotifications implements ShouldQueue
 
 
 
+
