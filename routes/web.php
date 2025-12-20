@@ -10,7 +10,7 @@ use App\Livewire\Admin\Classrooms;
 use App\Livewire\Admin\Users;
 use App\Http\Controllers\Admin\LectureController;
 use App\Http\Controllers\Professor\HallController;
-
+use App\Http\Controllers\StudentChatController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Admin\SubjectController;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +55,8 @@ Route::middleware([
     Route::post('/halls/{hall}/release', [\App\Http\Controllers\HallBookingController::class, 'release'])->name('halls.release');
 
 });
+
+
 
 // مسارات واجهة المدير (Admin Panel Routes) - محمية بـ AdminMiddleware
 Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
@@ -154,6 +156,12 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->name('student.
     Route::get('scan-qr', [StudentDashboardController::class, 'scanQr'])->name('scan-qr');
     Route::post('scan-qr', [AttendanceController::class, 'scanQr'])->name('scan-qr.scan');
     Route::get('attendance', [StudentDashboardController::class, 'attendance'])->name('attendance');
+
+    // Chat routes
+    Route::get('chat', function() {
+        return view('student.chat');
+    })->name('chat.view');
+    Route::post('chat', [StudentChatController::class, 'chat'])->name('chat');
 
     // Profile routes
     Route::get('profile', [StudentProfileController::class, 'show'])->name('profile');

@@ -29,9 +29,9 @@
                 </div>
                 
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-1">
+                    <h4 class="text-2xl font-bold text-white mb-1">
                         {{ __('Forgot Password?') }}
-                    </h2>
+                    </h4>
                     <p class="text-sm text-white/70">
                         {{ __('Enter your email to receive the reset link.') }}
                     </p>
