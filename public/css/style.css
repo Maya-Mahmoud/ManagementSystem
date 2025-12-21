@@ -1,0 +1,215 @@
+.btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease; /* إضافة الانتقال السلس */
+}
+
+.btn-green {
+    background-color: #0d9488;
+    color: white;
+}
+
+.btn-green:hover {
+    background-color: #16a34a;
+    transform: scale(1.1); /* تكبير 10% عند المرور */
+}
+
+            /* النص بالللون الاخضر */
+            .text-green-custom {
+    color: #10B981; 
+                     }
+                     
+                     /* تنسيق السليكت */
+                     .select-green {
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border: 1px solid #D1D5DB; /* gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    background-color: #ffffff; /* bg-white */
+    min-width: 120px; /* min-w-[120px] */
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* تنسيق النص في اعلا الصفحه */
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #2d3436;                  /* في اللايت */
+}
+
+.section-subtitle {
+  font-size: 1.05rem;
+  color: #636e72;                  /* في اللايت */
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Dark Mode - التعديل الصحيح */
+body.dark-theme .section-title {
+  color: #ffffff;
+}
+
+body.dark-theme .section-subtitle {
+  color: #a3bffa;                  /* اللون المثالي الناعم والواضح */
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #2d3436;                  /* في اللايت */
+}
+
+.section-subtitle {
+  font-size: 1.05rem;
+  color: #636e72;                  /* في اللايت */
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Dark Mode - هون السحر */
+.dark .section-title {
+  color: #ffffff;                  /* أبيض نقي للعنوان الرئيسي عشان يكون قوي وواضح */
+}
+
+.dark .section-subtitle {
+  color: #a3bffa;                  /* لون أزرق-رمادي فاتح ناعم ومتوهج خفيف */
+  /* أو بديل: #b0c4ff إذا بدك أفتح شوي */
+}
+
+/* هنا نهايه التنسيق باعلى الصفحه */
+
+/* تنسق الكاردات */
+.hall-card {
+    position: relative;
+    border: 2px solid #16a34a; /* أخضر */
+    border-radius: 0.5rem; /* نفس rounded-lg */
+    padding: 1.5rem; /* نفس p-6 */
+    background-color: white;
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5); /* توهج أخضر */
+    transition: box-shadow 0.3s ease;
+}
+
+.hall-card:hover {
+    box-shadow: 0 0 20px rgba(22, 163, 74, 0.7); /* توهج أقوى عند hover */
+}
+
+
+/* الداراك واللايت مود */
+            body.dark-theme {
+             background: linear-gradient(135deg, #000000 0%, #0b1a0f 40%, #0f2015 70%, #121212 100%);
+             
+                color: #000000;
+                font-family: 'Figtree', sans-serif;
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+            }
+
+            body.light-mode {
+                background: #f9fafbf1;
+                color: #151616;
+            }
+
+
+          header {
+      background: linear-gradient(135deg, #000000 0%, #0b1a0f 40%, #0f2015 70%, #121212 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgb(192, 199, 192);
+    align-items: center;
+    transition: all 0.4s ease; /* إضافة انتقال ناعم */
+}
+
+           header.light-mode {
+    background: #e2dddd00; 
+    border: 1px solid #e5e7eb; 
+    backdrop-filter: none;
+    box-shadow: 0 1px 3px rgba(238, 238, 238, 0.881); 
+}
+
+            header .text-xs {
+                color: #038014;
+            }
+
+            .dashboard-container {
+                min-height: 100vh;
+                padding: 1.5rem;
+            }
+
+            .nav-link {
+                display: flex;
+                align-items: center;
+                padding: 0.5rem 0.75rem;
+                font-size: 1.125rem;
+                font-weight: 500;
+                color: #6b7280;
+                text-decoration: none;
+            }
+
+            .nav-link:hover {
+                color: #374151;
+            }
+
+            .nav-link.active {
+                color: #085c17;
+                border-bottom: 3px solid #3aed4c;
+            }
+
+            /* زر تبديل الثيم */
+            .theme-toggle-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(237, 236, 236, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .theme-toggle-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.1);
+            }
+
+            .theme-toggle-btn.light-mode {
+                background: rgba(172, 13, 13, 0.1);
+                border: 1px solid rgba(0, 0, 0, 0.2);
+            }
+
+            .theme-icon {
+                width: 20px;
+                height: 20px;
+                color: #e0e0e0;
+            }
+
+            .light-mode .theme-icon {
+                color: #374151;
+            }
+            .btn2{
+ padding: 0.5rem 1rem; /* px-4 py-2 */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: white; /* text-white */
+    background-color: #5b21b6; /* البنفسجي المتناسق مع الأخضر */
+    border-radius: 0.375rem; /* rounded-md */
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+             
+            }
+            .btn2:hover{
+              background-color: #4c1d95;
+            }

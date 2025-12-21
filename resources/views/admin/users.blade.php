@@ -17,41 +17,42 @@
     </style>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Page Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
-            <p class="text-gray-600">Manage system users, roles, and permissions</p>
+        <div class="section-header">
+            <h1 class="section-title">User Management</h1>
+            <p class="section-subtitle">Manage system users, roles, and permissions</p>
+        
         </div>
 
         <!-- Sub Navigation -->
-        <div class="bg-white shadow-sm rounded-lg mb-6">
-            <div class="px-6 py-4">
+        <div class="hall-card rounded-xl mb-8">
+           
                 <nav class="flex space-x-8">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link">
                         <svg class="w-5 h-5 mr-3"  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                         Overview
                     </a>
-                    <a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-purple-600 border-b-2 border-purple-600">
+                   <a href="#"  class="nav-link active">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                         Users
                     </a>
-                    <a href="{{ route('admin.halls') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                    <a href="{{ route('admin.halls') }}" class="nav-link">
                         <svg class="w-5 h-5 mr-3"  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                         Halls
                     </a>
-                    <a href="{{ route('admin.subjects') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                    <a href="{{ route('admin.subjects') }}" class="nav-link">
                         <svg class="w-5 h-5 mr-3"  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                         Subject
                     </a>
                 </nav>
-            </div>
+          
         </div>
 
        
@@ -69,7 +70,7 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <select id="roleFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[120px]">
+                        <select id="roleFilter" class="select-green">
                             <option value="">All Roles</option>
                             <option value="admin">Admin</option>
                             <option value="professor">Professor</option>
@@ -77,7 +78,7 @@
                         </select>
                     </div>
                 </div>
-                <button id="addUserBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 flex items-center">
+                <button id="addUserBtn" class="btn btn-green flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -87,7 +88,7 @@
         </div>
 
        
-        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="hall-card rounded-lg overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -197,7 +198,7 @@
                             Cancel
                         </button>
                         <button type="submit"
-                                class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700">
+                                class="btn2">
                             Create
                         </button>
                     </div>

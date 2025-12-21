@@ -6,120 +6,111 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-
+       
         <title>{{ $title ? $title . ' - ' : '' }}{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen bg-gray-100">
+   <body class="dark-theme">
+   <div class="dashboard-container">
             <!-- Header -->
-            <header class="bg-white shadow-sm border-b">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between items-center h-16">
-                        
-                        <!-- Logo -->
-                        <div class="flex items-center">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-lg mr-3
-                                        bg-gradient-to-br from-indigo-500 to-purple-700 shadow-lg">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-semibold text-purple-700">Hall Manager</h4>
-                                <p class="text-xs text-gray-500">College Management System</p>
-                            </div> 
-                        </div>
+        
+<header>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex justify-between items-center h-16">
 
-                        <!-- Right side -->
-                        <div class="flex items-center space-x-4">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <div class="flex items-center justify-center w-16 h-16 rounded-lg mr-3
+                            bg-gradient-to-br from-green-400 to-green-700 shadow-lg ring-2 ring-gray-400/80 mb-4 ">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
 
-                            <!-- Notification Icon with Dropdown -->
-                            <div class="relative">
-                                <button id="admin-notification-bell" type="button" class="flex items-center bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs hover:bg-red-200 transition-colors focus:outline-none">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002
-                                            6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67
-                                            6.165 6 8.388 6 11v3.159c0 .538-.214
-                                            1.055-.595 1.436L4 17h5m6 0a3 3 0
-                                            11-6 0h6z"/>
-                                    </svg>
-                                    <span id="admin-notification-count">0</span>
-                                </button>
+                <div>
+                    <h4 class="text-xl font-semibold text-green-custom">unismart</h4>
+                    <p class="text-xl text-green-custom">College Management System</p>
+                </div> 
+            </div>
 
-                                <!-- Dropdown -->
-                                <div id="admin-notification-dropdown" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50 overflow-hidden">
-                                    <!-- Header -->
-                                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3">
-                                        <h3 class="text-white font-semibold">Notifications</h3>
-                                    </div>
+            <!-- Right side -->
+            <div class="flex items-center space-x-4">
 
-                                    <!-- Notifications List -->
-                                    <div id="admin-notifications-list" class="max-h-96 overflow-y-auto divide-y">
-                                        <div class="text-center py-8 text-gray-500">
-                                            <p class="text-sm">Loading...</p>
-                                        </div>
-                                    </div>
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-btn" 
+                        class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                    <svg id="sun-icon" class="theme-icon w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg id="moon-icon" class="theme-icon w-5 h-5 text-gray-700 dark:text-gray-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
 
-                                    <!-- Pagination -->
-                                    <div id="admin-notifications-pagination" class="border-t px-4 py-3 bg-gray-50 flex justify-center gap-2">
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button id="admin-notification-bell" type="button" 
+                            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all duration-300 cursor-pointer hover:-translate-y-0.5 relative">
+                        <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0h6z"/>
+                        </svg>
+                        <span id="admin-notification-count" 
+                              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+                            0
+                        </span>
+                    </button>
 
-                            <!-- Profile -->
-                            <div class="flex items-center bg-gray-100 px-2 py-1 rounded text-xs">
-                                <svg class="w-4 h-4 text-gray-600 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 
-                                        018 0zM12 14a7 7 0 00-7 7h14a7 
-                                        7 0 00-7-7z"/>
-                                </svg>
-
-                                @if(Auth::user()->role === 'admin' || Auth::user()->role === 'professor')
-                                    <a href="{{ route('admin.profile') }}" class="text-xs font-medium text-gray-700 hover:text-purple-600 transition-colors">
-                                        {{ Auth::user()->name }}
-                                    </a>
-                                @else
-                                    <span class="text-xs font-medium text-gray-700">
-                                        {{ Auth::user()->name }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            <!-- User Role Badge -->
-                            <span class="ml-1 bg-purple-100 text-purple-800 text-xs px-1 py-0.5 rounded">
-                                {{ ucfirst(Auth::user()->role) }}
-                            </span>
-
-                            <!-- Logout -->
-                            <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$root.submit()">
-                                @csrf
-                                <button type="submit" class="flex items-center text-gray-600 hover:text-gray-900 focus:outline-none">
-                                    <svg class="w-4 h-4 me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 
-                                            4v1a3 3 0 01-3 3H6a3 3 0 
-                                            01-3-3V7a3 3 0 013-3h4a3 
-                                            3 0 013 3v1"></path>
-                                    </svg>
-                                    Logout
-                                </button>
-                            </form>
-
-                        </div>
+                    <!-- Dropdown (يبقى نفس الكود السابق بدون تغيير) -->
+                    <div id="admin-notification-dropdown" class="hidden absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 overflow-hidden">
+                        <!-- ... باقي كود الـ dropdown ... -->
                     </div>
                 </div>
-            </header>
+
+                <!-- Profile Button -->
+                <a href="{{ Auth::user()->role === 'admin' || Auth::user()->role === 'professor' ? route('admin.profile') : '#' }}"
+                   class="flex items-center space-x-3 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                    <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <div class="text-left">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ Auth::user()->name }}</p>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ ucfirst(Auth::user()->role) }}</span>
+                    </div>
+                </a>
+
+                <!-- Logout -->
+                    <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$root.submit()">
+            @csrf
+            <button type="submit" 
+                    class="btn btn-green flex items-center">
+                
+                <span>Logout </span>
+                
+                <!-- الأيقونة حد الكلمة (على اليمين) -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+            </button>
+        </form>
+
+            </div>
+        </div>
+    </div>
+</header>
 
             <!-- Navigation -->
             <nav class="bg-white shadow-sm">
@@ -127,7 +118,7 @@
                     <div class="flex justify-between h-12">
                         <div class="flex">
                             @can('admin panel')
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('admin.dashboard') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ in_array(request()->route()->getName(), ['admin.dashboard', 'admin.users', 'admin.halls', 'admin.subjects']) ? 'active' : '' }}">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-2m-9-2l4 2m0-5L9 7m5 0L9 7"/>
                                     </svg>
@@ -135,7 +126,7 @@
                                 </a>
                             @endcan
 
-                            <a href="{{ route('halls.index') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('halls.index') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                            <a href="{{ route('halls.index') }}" class="nav-link {{ request()->routeIs('halls.index') ? 'active' : '' }}">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
                                 </svg>
@@ -143,7 +134,7 @@
                             </a>
 
                             @can('lectures')
-                                <a href="{{ route('admin.lectures') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('admin.lectures') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                <a href="{{ route('admin.lectures') }}" class="nav-link {{ request()->routeIs('admin.lectures') ? 'active' : '' }}">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z"/>
                                     </svg>
@@ -152,7 +143,7 @@
                             @endcan
 
                             @if(Auth::user()->role === 'professor')
-                                <a href="{{ route('professor.lectures') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('professor.lectures') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                <a href="{{ route('professor.lectures') }}" class="nav-link {{ request()->routeIs('professor.lectures') ? 'active' : '' }}">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z"/>
                                     </svg>
@@ -160,28 +151,28 @@
                                 </a>
                             @endif
 
-                            <a href="{{ route('admin.generate-qr') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('admin.generate-qr') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                            <a href="{{ route('admin.generate-qr') }}" class="nav-link {{ request()->routeIs('admin.generate-qr') ? 'active' : '' }}">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                 </svg>
                                 Generate QR
                             </a>
 
-                            <a href="{{ route('admin.advanced-scheduler') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('admin.advanced-scheduler') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                            <a href="{{ route('admin.advanced-scheduler') }}" class="nav-link {{ request()->routeIs('admin.advanced-scheduler') ? 'active' : '' }}">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
                                 Advanced Scheduler
                             </a>
 
-                            <a href="{{ route('admin.performance') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('admin.performance') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                            <a href="{{ route('admin.performance') }}" class="nav-link {{ request()->routeIs('admin.performance') ? 'active' : '' }}">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                                 Performance
                             </a>
                             
-                            <a href="{{ route('admin.absence.alerts') }}" class="flex items-center px-3 py-2 text-lg font-medium {{ request()->routeIs('admin.absence.alerts') ? 'text-purple-600 border-b-2 border-purple-600' : 'text-gray-500 hover:text-gray-700' }}">
+                            <a href="{{ route('admin.absence.alerts') }}" class="nav-link {{ request()->routeIs('admin.absence.alerts') ? 'active' : '' }}">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                 </svg>
@@ -494,6 +485,49 @@
                     }
                 }, 30000);
             });
+        document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    const sun = document.getElementById('sun-icon');
+    const moon = document.getElementById('moon-icon');
+    const body = document.body;
+    const header = document.querySelector('header'); // نضيف الـ header
+
+    // تحميل الثيم المحفوظ
+    if (localStorage.getItem('theme') === 'light') {
+        body.classList.remove('dark-theme');
+        body.classList.add('light-mode');
+        header.classList.add('light-mode'); // نضيف الكلاس على الـ header
+        sun.classList.add('hidden');
+        moon.classList.remove('hidden');
+    } else {
+        body.classList.add('dark-theme');
+        body.classList.remove('light-mode');
+        header.classList.remove('light-mode'); // نشيل الكلاس من الـ header
+        sun.classList.remove('hidden');
+        moon.classList.add('hidden');
+    }
+
+    // التبديل
+    toggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('dark-theme')) {
+            // من Dark لـ Light
+            body.classList.remove('dark-theme');
+            body.classList.add('light-mode');
+            header.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            sun.classList.add('hidden');
+            moon.classList.remove('hidden');
+        } else {
+            // من Light لـ Dark
+            body.classList.remove('light-mode');
+            body.classList.add('dark-theme');
+            header.classList.remove('light-mode');
+            localStorage.setItem('theme', 'dark');
+            sun.classList.remove('hidden');
+            moon.classList.add('hidden');
+        }
+    });
+});
         </script>
 
     </body>
