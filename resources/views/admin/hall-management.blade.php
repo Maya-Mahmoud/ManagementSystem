@@ -324,7 +324,6 @@
                 document.getElementById('editHallCapacity').value = hall.capacity || '';
                 document.getElementById('editHallBuilding').value = hall.building || '';
                 document.getElementById('editHallFloor').value = hall.floor || '';
-                document.getElementById('editHallStatus').value = hall.status || 'available';
                 document.getElementById('editHallEquipment').value = hall.equipment || '';
 
                 // Show modal
