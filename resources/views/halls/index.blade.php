@@ -2,11 +2,13 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Halls Booking</h1>
-                <p class="mt-2 text-sm text-gray-600">Book or release halls for your classes</p>
-                <br>
+              
+            
+ <div class="section-header">
+            <h1 class="section-title">Halls Booking</h1>
+            <p class="section-subtitle">Book or release halls for your classes</p>
                 <h3 style="color: #8A2BE2;">Select the start and end time to view all halls available at this time:</h3>
-
+        </div>
                 <!-- DateTime Filter Form -->
                 <div class="mt-6 bg-white p-4 rounded-lg shadow-md">
                     <form method="GET" action="{{ route('halls.index') }}" class="flex flex-wrap items-end gap-4">

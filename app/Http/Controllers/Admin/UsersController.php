@@ -10,11 +10,25 @@ use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::select('id', 'name', 'email', 'role', 'status', 'created_at')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+        $query = User::select('id', 'name', 'email', 'role', 'status', 'created_at');
+
+        // Apply search filter
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Apply role filter
+        if ($request->has('role') && !empty($request->role)) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json($users);
     }

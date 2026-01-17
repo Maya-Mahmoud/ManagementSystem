@@ -12,6 +12,12 @@ class SubjectController extends Controller
     {
         $query = Subject::query();
 
+        // Apply search filter
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
         if ($request->filled('year')) {
             $query->where('year', $request->year);
         }

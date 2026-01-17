@@ -44,40 +44,50 @@
         <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Filter Subjects</h3>
-                <form method="GET" action="{{ route('admin.subjects') }}" class="flex flex-wrap gap-4 items-end">
+                <div class="flex flex-wrap gap-4 items-end">
                     <div class="flex-1 min-w-[200px]">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                        <select name="department_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search Subjects</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" id="subjectSearchInput" placeholder="Search by subject name..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-[200px]  text-black">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 ">Department</label>
+                        <select id="departmentFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">All Departments</option>
                             @foreach($departments as $department)
-                                <option value="{{ $department->id }}" {{ request('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                                <option value="{{ $department->id }}">{{ $department->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex-1 min-w-[150px]">
+                    <div class="flex-1 min-w-[150px]  text-black">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
-                        <select name="semester" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select id="semesterFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">All Semesters</option>
-                            <option value="first" {{ request('semester') == 'first' ? 'selected' : '' }}>First</option>
-                            <option value="second" {{ request('semester') == 'second' ? 'selected' : '' }}>Second</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
                         </select>
                     </div>
-                    <div class="flex-1 min-w-[150px]">
+                    <div class="flex-1 min-w-[150px]  text-black">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
-                        <select name="year" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select id="yearFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">All Years</option>
-                            <option value="first" {{ request('year') == 'first' ? 'selected' : '' }}>First</option>
-                            <option value="second" {{ request('year') == 'second' ? 'selected' : '' }}>Second</option>
-                            <option value="third" {{ request('year') == 'third' ? 'selected' : '' }}>Third</option>
-                            <option value="fourth" {{ request('year') == 'fourth' ? 'selected' : '' }}>Fourth</option>
-                            <option value="fifth" {{ request('year') == 'fifth' ? 'selected' : '' }}>Fifth</option>
+                            <option value="first">First</option>
+                            <option value="second">Second</option>
+                            <option value="third">Third</option>
+                            <option value="fourth">Fourth</option>
+                            <option value="fifth">Fifth</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <button type="submit" class="btn2">Search</button>
-                        <a href="{{ route('admin.subjects') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600">Clear</a>
+                        <button type="button" id="clearFiltersBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600">Clear</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -192,7 +202,7 @@
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                 <div class="mt-3">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">Edit Subject</h3>
+                        <h3 class=" block text-lg font-medium text-gray-900">Edit Subject</h3>
                         <button id="closeEditModal" class="text-gray-400 hover:text-gray-600">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -203,7 +213,7 @@
                     <form id="editSubjectForm" action="" method="POST">
                         @csrf
                         @method('PUT')
-                        <div class="mb-4">
+                        <div class="mb-4 ">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Subject Name</label>
                             <input type="text" id="editName" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                         </div>
@@ -259,6 +269,15 @@
                 const closeEditModal = document.getElementById('closeEditModal');
                 const cancelEditBtn = document.getElementById('cancelEditBtn');
                 const editSubjectForm = document.getElementById('editSubjectForm');
+
+                // Filter elements
+                const subjectSearchInput = document.getElementById('subjectSearchInput');
+                const departmentFilter = document.getElementById('departmentFilter');
+                const semesterFilter = document.getElementById('semesterFilter');
+                const yearFilter = document.getElementById('yearFilter');
+                const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+                let allSubjects = @json($subjects);
 
                 // Show add modal
                 addSubjectBtn.addEventListener('click', function() {
@@ -329,6 +348,98 @@
                 editSubjectForm.addEventListener('submit', function(e) {
                     // Optional: Add loading state or validation
                 });
+
+                // Filter function
+                function filterSubjects() {
+                    const searchTerm = subjectSearchInput.value.toLowerCase();
+                    const selectedDepartment = departmentFilter.value;
+                    const selectedSemester = semesterFilter.value;
+                    const selectedYear = yearFilter.value;
+
+                    const filtered = allSubjects.filter(subject => {
+                        const matchesSearch = subject.name.toLowerCase().includes(searchTerm);
+                        const matchesDepartment = !selectedDepartment || subject.department_id == selectedDepartment;
+                        const matchesSemester = !selectedSemester || subject.semester === selectedSemester;
+                        const matchesYear = !selectedYear || subject.year === selectedYear;
+                        return matchesSearch && matchesDepartment && matchesSemester && matchesYear;
+                    });
+
+                    updateSubjectsGrid(filtered);
+                }
+
+                // Event listeners for filters
+                subjectSearchInput.addEventListener('input', filterSubjects);
+                departmentFilter.addEventListener('change', filterSubjects);
+                semesterFilter.addEventListener('change', filterSubjects);
+                yearFilter.addEventListener('change', filterSubjects);
+
+                // Clear filters
+                clearFiltersBtn.addEventListener('click', function() {
+                    subjectSearchInput.value = '';
+                    departmentFilter.value = '';
+                    semesterFilter.value = '';
+                    yearFilter.value = '';
+                    filterSubjects();
+                });
+
+                function updateSubjectsGrid(subjects) {
+                    const container = document.querySelector('.grid');
+
+                    if (subjects.length === 0) {
+                        container.innerHTML = '<p class="text-gray-600 col-span-full text-center py-8">No subjects found matching your criteria.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = subjects.map(subject => {
+                        const departmentName = subject.department ? subject.department.name : 'N/A';
+                        const lectureCount = subject.lecture_count || 0;
+
+                        return `
+                            <div class="hall-card">
+                                <div class="absolute top-2 right-2 flex space-x-2">
+                                    <button class="editSubjectBtn text-purple-600 hover:text-purple-800" data-id="${subject.id}" data-name="${subject.name}" data-semester="${subject.semester}" data-year="${subject.year}" data-department-id="${subject.department_id}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                    <form action="/admin/subjects/${subject.id}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this subject?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                                <h4 class="text-md font-medium text-gray-900">${subject.name}</h4>
+                                <p class="text-md text-gray-600">Year: ${subject.year.charAt(0).toUpperCase() + subject.year.slice(1)} | Semester: ${subject.semester.charAt(0).toUpperCase() + subject.semester.slice(1)} | Department: ${departmentName}</p>
+                                <p class="text-sd text-gray-600">${lectureCount} lectures</p>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Re-attach edit button event listeners
+                    document.querySelectorAll('.editSubjectBtn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const id = this.getAttribute('data-id');
+                            const name = this.getAttribute('data-name');
+                            const semester = this.getAttribute('data-semester');
+                            const year = this.getAttribute('data-year');
+                            const departmentId = this.getAttribute('data-department-id');
+
+                            document.getElementById('editName').value = name;
+                            document.getElementById('editSemester').value = semester;
+                            document.getElementById('editYear').value = year;
+                            document.getElementById('editDepartment').value = departmentId;
+                            editSubjectForm.action = `/admin/subjects/${id}`;
+                            editSubjectModal.classList.remove('hidden');
+                        });
+                    });
+                }
+
+                // Initialize with all subjects
+                filterSubjects();
             });
         </script>
     </div>

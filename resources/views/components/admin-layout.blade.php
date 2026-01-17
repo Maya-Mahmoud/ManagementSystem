@@ -39,8 +39,8 @@
                 </div>
 
                 <div>
-                    <h4 class="text-xl font-semibold text-green-custom">unismart</h4>
-                    <p class="text-xl text-green-custom">College Management System</p>
+                    <h4 class="brand-title ">unismart</h4>
+                    <p class="brand-subtitle">College Management System</p>
                 </div> 
             </div>
 
