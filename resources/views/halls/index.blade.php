@@ -10,16 +10,20 @@
                 <h3 style="color: #8A2BE2;">Select the start and end time to view all halls available at this time:</h3>
         </div>
                 <!-- DateTime Filter Form -->
-                <div class="mt-6 bg-white p-4 rounded-lg shadow-md">
+               <div class="mt-6 bg-white p-4 rounded-lg 
+            ring-2 ring-green-500 
+            shadow-lg shadow-green-400/70">
+
+
                     <form method="GET" action="{{ route('halls.index') }}" class="flex flex-wrap items-end gap-4">
                         <div>
-                            <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                            <input type="datetime-local" name="start_time" id="start_time" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ isset($startTime) ? $startTime : '' }}">
+                            <label for="start_time" class="block text-sm font-medium  mb-1">Start Time</label>
+                            <input type="datetime-local" name="start_time" id="start_time" class="px-3 py-2 border border-gray-600 bg-gray-700  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hall-card" value="{{ isset($startTime) ? $startTime : '' }}">
                         </div>
 
                         <div>
-                            <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                            <input type="datetime-local" name="end_time" id="end_time" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" value="{{ isset($endTime) ? $endTime : '' }}">
+                            <label for="end_time" class="block text-sm font-medium  mb-1">End Time</label>
+                            <input type="datetime-local" name="end_time" id="end_time" class="px-3 py-2 border border-gray-600 bg-gray-700  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hall-card" value="{{ isset($endTime) ? $endTime : '' }}">
                         </div>
 
                         <div class="flex gap-2">
@@ -27,7 +31,7 @@
                                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="mr-2"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V8h14v12zM7 10h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>Search
                             </button>
                             @if(isset($startTime) || isset($endTime))
-                                <a href="{{ route('halls.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">
+                                <a href="{{ route('halls.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors ">
                                     View all
                                 </a>
                             @endif
@@ -60,23 +64,23 @@
                         $currentLecture = $hall->lectures()->where('start_time', '<=', now())->where('end_time', '>', now())->first();
                         $currentBooking = $hall->currentBooking;
                     @endphp
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-purple-300">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $hall->hall_name }}</h3>
-
+                    <div class="hall-card">
+                      
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">{{ $hall->hall_name }}</h3>
+                                            <br>
                             <div class="space-y-3 mb-4">
                                 <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                     </svg>
                                     Capacity: <span class="font-medium ml-1">{{ $hall->capacity }}</span>
                                 </div>
 
                                 <div class="flex items-center text-sm">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                     </svg>
-                                    <span class="font-medium px-2 py-1 rounded-full text-xs {{ $hall->isOccupiedAt(now()) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                    <span class="hall-card font-medium px-2 py-1 rounded-full text-xs {{ $hall->isOccupiedAt(now()) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
                                         {{ $hall->isOccupiedAt(now()) ? 'Occupied' : 'Available' }}
                                     </span>
                                 </div>
@@ -97,14 +101,14 @@
                                 @endif
 
                                 @if($hall->equipment)
-                                    <div class="text-xs text-gray-500">
+                                    <div class="text-xs">
                                         Equipment: {{ $hall->equipment }}
                                     </div>
                                 @endif
                             </div>
 
                             <div class="flex justify-between items-center">
-                                <div class="text-sm text-gray-500">
+                                <div class="text-sm ">
                                     {{ $hall->building }}, Floor {{ $hall->floor }}
                                 </div>
 
@@ -125,7 +129,7 @@
                                     </form>
                                 @endif
                             </div>
-                        </div>
+                       
                     </div>
                 @endforeach
             </div>
