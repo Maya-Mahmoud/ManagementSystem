@@ -7,22 +7,18 @@
  <div class="section-header">
             <h1 class="section-title">Halls Booking</h1>
             <p class="section-subtitle">Book or release halls for your classes</p>
-                <h3 style="color: #8A2BE2;">Select the start and end time to view all halls available at this time:</h3>
+                <h1 style="color: #8A2BE2;">Select the start and end time to view all halls available at this time:</h1>
         </div>
                 <!-- DateTime Filter Form -->
-               <div class="mt-6 bg-white p-4 rounded-lg 
-            ring-2 ring-green-500 
-            shadow-lg shadow-green-400/70">
-
-
+               
                     <form method="GET" action="{{ route('halls.index') }}" class="flex flex-wrap items-end gap-4">
                         <div>
-                            <label for="start_time" class="block text-sm font-medium  mb-1">Start Time</label>
+                            <label for="start_time" class="block text-sm font-medium  mb-1">Select Start Time</label>
                             <input type="datetime-local" name="start_time" id="start_time" class="px-3 py-2 border border-gray-600 bg-gray-700  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hall-card" value="{{ isset($startTime) ? $startTime : '' }}">
                         </div>
 
                         <div>
-                            <label for="end_time" class="block text-sm font-medium  mb-1">End Time</label>
+                            <label for="end_time" class="block text-sm font-medium  mb-1">Select End Time</label>
                             <input type="datetime-local" name="end_time" id="end_time" class="px-3 py-2 border border-gray-600 bg-gray-700  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hall-card" value="{{ isset($endTime) ? $endTime : '' }}">
                         </div>
 
@@ -43,7 +39,7 @@
                             View available halls {{ \Carbon\Carbon::parse($startTime)->format('d/m/Y H:i') }} to {{ \Carbon\Carbon::parse($endTime)->format('d/m/Y H:i') }}
                         </p>
                     @endif
-                </div>
+            
             </div>
 
             @if (session('success'))
@@ -57,13 +53,16 @@
                     {{ session('error') }}
                 </div>
             @endif
-
+<div class="section-subtitle">College Halls :</div>
+<br>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                
                 @foreach($halls as $hall)
                     @php
                         $currentLecture = $hall->lectures()->where('start_time', '<=', now())->where('end_time', '>', now())->first();
                         $currentBooking = $hall->currentBooking;
                     @endphp
+                    
                     <div class="hall-card">
                       
                             <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">{{ $hall->hall_name }}</h3>
@@ -80,7 +79,7 @@
                                     <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                     </svg>
-                                    <span class="hall-card font-medium px-2 py-1 rounded-full text-xs {{ $hall->isOccupiedAt(now()) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                    <span class=" font-medium px-2 py-1 rounded-full text-xs {{ $hall->isOccupiedAt(now()) ? 'bg-red-100 text-rose-600' : 'bg-green-100 text-green-800' }}">
                                         {{ $hall->isOccupiedAt(now()) ? 'Occupied' : 'Available' }}
                                     </span>
                                 </div>

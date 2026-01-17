@@ -41,7 +41,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white shadow-sm rounded-lg mb-6">
+        <div class="bg-white shadow-sm rounded-lg mb-6 hall-card">
             <div class="p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Filter Subjects</h3>
                 <div class="flex flex-wrap gap-4 items-end">
@@ -58,7 +58,7 @@
                     </div>
                     <div class="flex-1 min-w-[200px]  text-black">
                         <label class="block text-sm font-medium text-gray-700 mb-2 ">Department</label>
-                        <select id="departmentFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <select id="departmentFilter" class="w-full px-3 py-2 border border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">All Departments</option>
                             @foreach($departments as $department)
                                 <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -92,7 +92,7 @@
         </div>
 
         <!-- Subjects List -->
-        <div class="bg-white shadow-sm rounded-lg">
+        <div class="bg-white shadow-sm rounded-lgb hall-card">
             <div class="p-6 flex justify-between items-center border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Lecture Subjects</h3>
                 <button id="addSubjectBtn" class="btn btn-green">+ Add Subject</button>

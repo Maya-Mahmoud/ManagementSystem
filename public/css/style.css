@@ -129,7 +129,25 @@ body.dark-theme .section-subtitle {
     font-size: 1.25rem;        /* text-xl */
     color: #1f9d55;            /* green-custom */
 }
+/* تنسيق اسم المحاضر */
+.lecturer-badge {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem; /* text-sm */
+    /* يمكنكِ إضافة margin إذا أردتِ */
+}
 
+.lecturer-badge span {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 600;    /* font-semibold */
+    color: #7e22ce;      /* text-purple-700 */
+}
+
+/* دعم الوضع المظلم (Dark Mode) */
+.dark .lecturer-badge span,
+body.dark-theme .lecturer-badge span {
+    color: #b377ec !important;      /* لون بنفسجي أفتح ليظهر بوضوح في الظلام */
+}
 
 
 /* هنا نهايه التنسيق باعلى الصفحه */
@@ -224,12 +242,10 @@ body.dark-theme .hall-card {
         0 0 0 3px rgba(16, 185, 129, 0.2),
         inset 0 2px 0 rgba(255, 255, 255, 0.05),
         0 0 40px rgba(16, 185, 129, 0.1);
-    color: #f8fafc;
+   
 }
 
-body.dark-theme .hall-card * {
-    color: #f8fafc;
-}
+
 
 body.dark-theme .hall-card:hover {
     box-shadow:

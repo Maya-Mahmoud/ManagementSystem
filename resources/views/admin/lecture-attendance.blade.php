@@ -3,28 +3,30 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Page Header -->
        <div class="flex flex-col">
-    <a href="{{ route('admin.lectures') }}" class="text-purple-600 font-medium hover:text-purple-700 mb-2">
+    <a href="{{ route('admin.lectures') }}" class="text-base text-purple-600 text-lg hover:text-purple-700 mb-2">
         ← Back to Lectures
     </a>
+    <br>
 
     <div class="flex justify-between items-center">
         <div>
-            <h3 class="text-3xl font-bold text-gray-900"> {{ $lecture->title }}</h3>
+            <h1 class="text-4xl font-bold text-gray-900"> {{ $lecture->title }}</h1>
             
           
         </div>
 
-        <button id="exportCsvBtn" class="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <button id="exportCsvBtn" class="flex items-center bg-green-600 text-white px-5 py-3 rounded-lg text-sm font-medium hover:bg-green-700">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
             Export CSV
         </button>
     </div>
 </div>
+<br>
 
         <!-- Lecture Details -->
-       <div class="bg-white p-4 border border-gray-100 rounded-xl shadow-md">
+       <div class="bg-white p-8 border border-green-100 rounded-xl shadow-md hall-card">
     <div class="flex flex-wrap justify-between items-start gap-y-4">
 
         <div class="flex items-start min-w-1/4">
@@ -34,10 +36,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-gray-700">
-                    {{ \Carbon\Carbon::parse($lecture->start_time)->locale('ar')->isoFormat('dddd, MMMM D') }}
+                <p class="text-base font-medium text-black-700">
+                    {{ \Carbon\Carbon::parse($lecture->start_time)->locale('en')->isoFormat('dddd, MMMM D') }}
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-black-500">
                     {{ \Carbon\Carbon::parse($lecture->start_time)->format('Y') }}
                 </p>
             </div>
@@ -54,7 +56,7 @@
             {{ \Carbon\Carbon::parse($lecture->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($lecture->end_time)->format('h:i A') }}
         </p>
 
-        <p class="text-sm text-gray-500">
+        <p class="text-base text-black-500">
             @php
                 $startTime = \Carbon\Carbon::parse($lecture->start_time);
                 $endTime = \Carbon\Carbon::parse($lecture->end_time);
@@ -73,10 +75,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-gray-700">
+                <p class="text-base font-medium text-black-700">
                     {{ $lecture->hall->hall_name }}
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-black-500">
                     {{ $lecture->hall->building }} , floor: {{ $lecture->hall->floor }}
                 </p>
             </div>
@@ -89,10 +91,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-gray-700">
+                <p class="text-base font-medium text-black-700">
                     Professor: {{ $lecture->user->name }}
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-black-500">
                    {{ $lecture->subject }}
                 </p>
             </div>
@@ -105,7 +107,7 @@
                 </svg>
             </div>
             <div>
-                <p class="text-sm font-medium text-gray-700">
+                <p class="text-base font-medium text-black-700">
                     Total Students
                 </p>
                 <p class="text-2xl font-bold text-gray-900">{{ $totalStudents }}</p>
@@ -115,13 +117,14 @@
 </div>
 
 <!-- Attendance Statistics -->
-<div class="bg-white p-4 border border-gray-100 rounded-xl shadow-md mt-6">
+
+<div class="bg-white p-6 border border-gray-100 rounded-xl shadow-md mt-6 hall-card ">
     <h3 class="text-lg font-medium text-gray-900 mb-4">Attendance Statistics</h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-green-50 p-4 rounded-lg border">
+        <div class="bg-green-100 p-4 rounded-lg border border-green-500/30">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="text-sm font-medium text-green-600">Present</h4>
+                    <h4 class="text-base font-medium text-green-600">Present</h4>
                     <p class="text-2xl font-bold text-green-900">{{ $presentCount }}</p>
                 </div>
                 <div class="text-green-500">
@@ -132,11 +135,11 @@
             </div>
         </div>
 
-        <div class="bg-red-50 p-4 rounded-lg border">
+        <div class="bg-rose-100 p-4 rounded-lg border border-rose-500/30">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="text-sm font-medium text-red-600">Absent</h4>
-                    <p class="text-2xl font-bold text-red-900">{{ $absentCount }}</p>
+                    <h4 class="text-base font-medium text-rose-600">Absent</h4>
+                    <p class="text-2xl font-bold text-rose-900">{{ $absentCount }}</p>
                 </div>
                 <div class="text-red-500">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,10 +149,10 @@
             </div>
         </div>
 
-        <div class="bg-blue-50 p-4 rounded-lg border">
+        <div class="bg-blue-100 p-4 rounded-lg border border-blue-500/30">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="text-sm font-medium text-blue-600">Attendance Rate</h4>
+                    <h4 class="text-base font-medium text-blue-600">Attendance Rate</h4>
                     <p class="text-2xl font-bold text-blue-900">{{ $totalStudents > 0 ? round(($presentCount / $totalStudents) * 100, 1) : 0 }}%</p>
                 </div>
                 <div class="text-blue-500">

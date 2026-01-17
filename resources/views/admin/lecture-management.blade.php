@@ -1,22 +1,19 @@
 <x-admin-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Page Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Lectures</h1>
-            <p class="text-gray-600">Manage lecture schedules and assignments</p>
+   
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="section-header">
+            <h1 class="section-title">Lectures</h1>
+            <p class="section-subtitle">Manage lecture schedules and assignments</p>
         </div>
 
         <!-- Add Lecture Button -->
         <div class="flex justify-end mb-6">
-            <button id="addLectureBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 hover:shadow-lg flex items-center transition-all duration-200 transform hover:scale-105">
-                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Add Lecture
+            <button id="addLectureBtn" class="btn btn-green">
+                + Add Lecture
             </button>
         </div>
-
+       
         <!-- Lectures Grid -->
         <div id="lecturesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Lectures will be loaded here dynamically -->
@@ -38,7 +35,7 @@
 
                 <form id="addLectureForm">
                     @csrf
-                    <div class="mb-4">
+                    <div class="mb-4 ">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Lecture Title</label>
                         <input type="text" id="lectureTitle" name="title" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -113,7 +110,9 @@
                         <select id="lectureHall" name="hall_id" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="">Select a hall</option>
-                            <!-- Halls will be loaded dynamically based on selected time -->
+                            @foreach($halls as $hall)
+                                <option value="{{ $hall->id }}">{{ $hall->hall_name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -125,7 +124,7 @@
                             Cancel
                         </button>
                         <button type="submit"
-                                class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700">
+                                 class="btn2">
                             Create
                         </button>
                     </div>
@@ -250,7 +249,7 @@
                     <button id="closeDeleteModal" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+                        </svg> 
                     </button>
                 </div>
 
@@ -427,42 +426,40 @@
                     const hallName = lecture.hall && lecture.hall.hall_name ? lecture.hall.hall_name : 'N/A';
 
                     return `
-                        <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                        <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hall-card">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-semibold text-gray-900">${subjectName} / ${lecture.title}</h3>
                                 <div class="flex items-center space-x-2">
-                                    <button onclick="editLecture(${lecture.id})" class="text-purple-600 hover:text-purple-900 text-xs font-medium transition-colors duration-200">
-                                        Edit
-                                    </button>
+                                  
                                     <button onclick="deleteLecture(${lecture.id})" class="text-red-600 hover:text-red-900 transition-colors duration-200 transform hover:scale-110">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
+                                        <svg class="w-5 h-5 !stroke-red-600" fill="none" viewBox="0 0 24 24" style="stroke: #ef4444 !important;">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>  
                                     </button>
                                 </div>
                             </div>
 
                             <div class="space-y-3 mb-4">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <span class="font-medium text-purple-600">by ${userName}</span>
+                                <div class="lecturer-badge">
+                                     <span>by ${userName}</span>
                                 </div>
 
                                 <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                     <span class="font-medium">${startDate}</span>
                                 </div>
 
                                 <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     ${startTime} - ${endTime}
                                 </div>
 
                                 <div class="flex items-center text-sm text-gray-600">
-                                    <svg class="w-3 h-3 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                     </svg>
                                     Hall: <span class="font-medium ml-1">${hallName}</span>
@@ -470,9 +467,9 @@
                             </div>
 
                             <div class="flex space-x-2">
-                                <a href="/admin/api/lectures/${lecture.id}/attendance" class="flex-1 text-white px-3 py-1 rounded-md text-sm font-medium text-center" style="background: linear-gradient(90deg, #7C3AED, #2563EB);">
+                                <a href="/admin/api/lectures/${lecture.id}/attendance" class="flex-1 text-white bg-gradient-to-r from-purple-700 to-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity flex items-center" style="background: linear-gradient(90deg, #7C3AED, #2563EB);">
                                     View Attendance</a>
-                                <button onclick="editLecture(${lecture.id})" class="flex-1 bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-300">
+                                <button onclick="editLecture(${lecture.id})" class=" flex-1 bg-gray-200  px-3 py-1 rounded-md bg-purple-100 text-purple-900 hover:bg-purple-200">
                                     Edit
                                 </button>
                             </div>
